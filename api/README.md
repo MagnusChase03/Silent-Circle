@@ -16,6 +16,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Create User](#usercreate)
 - [Delete User](#userdelete)
 - [Send friend request](#userfriendinvite)
+- [Accept friend request](#userfriendaccept)
 
 **Misc.**
 
@@ -262,6 +263,32 @@ $ sudo podman stop cs4389-api
 **Body**: `username`
 
 **Example**: `https://api.application.com/user/friend/invite`
+
+**Returns**: `200`, `400`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+### /user/friend/accept
+
+*Route to accept a friend request to a user.*
+
+**Method**: `POST`
+
+**Body**: `username`
+
+**Example**: `https://api.application.com/user/friend/accept`
 
 **Returns**: `200`, `400`
 
