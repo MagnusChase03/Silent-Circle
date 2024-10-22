@@ -1,5 +1,5 @@
 /* =========================================================================
-*  File Name: routes/friendRoutes/removeUser.go
+*  File Name: routes/friendRoutes/removeFriend.go
 *  Description: Handler for removing a friend.
 *  Author: MagnusChase03
 *  =======================================================================*/

@@ -25,7 +25,7 @@ type FriendInvite struct {
 *
 *  Arguments:
 *      - userID (int): The UserID of the sender.
-*      - id (int): The Username of the receiver.
+*      - username (string): The Username of the receiver.
 *
 *  Returns:
 *      - error: An error if any occurred.
@@ -60,7 +60,7 @@ func FriendRequestUser(userID int, username string) error {
 *
 *  Arguments:
 *      - userID (int): The UserID of the sender.
-*      - id (int): The Username of the receiver.
+*      - username (string): The Username of the receiver.
 *
 *  Returns:
 *      - error: An error if any occurred.
@@ -130,7 +130,7 @@ func AcceptFriendRequestUser(userID int, username string) error {
 *
 *  Arguments:
 *      - userID (int): The UserID of the sender.
-*      - id (int): The Username of the receiver.
+*      - username (string): The Username of the receiver.
 *
 *  Returns:
 *      - error: An error if any occurred.
@@ -182,7 +182,7 @@ func RejectFriendRequestUser(userID int, username string) error {
 *
 *  Arguments:
 *      - userID (int): The UserID of the sender.
-*      - id (int): The Username of the receiver.
+*      - username (string): The Username of the receiver.
 *
 *  Returns:
 *      - error: An error if any occurred.
@@ -212,4 +212,52 @@ func RemoveFriendUser(userID int, username string) error {
     }
 
     return nil;
+}
+
+/*
+*  Accepts a friend request to a specified user.
+*
+*  Arguments:
+*      - userID (int): The UserID of the sender.
+*
+*  Returns:
+*      - []string: A list of of the users friends.
+*      - error: An error if any occurred.
+*/
+func GetFriendUser(userID int) ([]string, error) {
+    instance, err := db.GetMariaDB();
+    if err != nil {
+        return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+    }
+
+    query, err := instance.Connection.Prepare(
+        `SELECT Users.Username FROM Users JOIN
+            Friends ON
+            Users.UserID = Friends.UserID OR
+            Users.UserID = Friends.User2ID
+            WHERE (Friends.UserID = ? OR
+            Friends.User2ID = ?) AND
+            Users.UserID != ?
+        `,
+    );
+    if err != nil {
+        return nil, fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
+    }
+    defer query.Close();
+
+    rows, err := query.Query(userID, userID, userID);
+    if err != nil {
+        return nil, fmt.Errorf("[ERROR] Failed to find friends. %w", err);
+    }
+
+    friends := make([]string, 0);
+    for rows.Next() {
+        var username string;
+        if err := rows.Scan(&username); err != nil {
+            return nil, fmt.Errorf("[ERROR] Failed to find friends. %w", err);
+        }
+        friends = append(friends, username);
+    }
+
+    return friends, nil;
 }

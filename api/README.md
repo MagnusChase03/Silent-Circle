@@ -17,6 +17,9 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Delete User](#userdelete)
 - [Send friend request](#userfriendinvite)
 - [Accept friend request](#userfriendaccept)
+- [Reject friend request](#userfriendreject)
+- [Remove friend](#userfriendremove)
+- [Get friend](#userfriendget)
 
 **Misc.**
 
@@ -369,6 +372,41 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 200,
     "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /user/friend/get
+
+*Route to get a list friend from a user.*
+
+**Method**: `GET`
+
+**Body**: `N/A`
+
+**Example**: `https://api.application.com/user/friend/get`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode":200,
+    "Data": {
+        "Friends": ["foo"]
+    }
 }
 ```
 
