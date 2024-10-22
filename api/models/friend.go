@@ -56,7 +56,7 @@ func FriendRequestUser(userID int, username string) error {
 }
 
 /*
-*  Accepts an friend request to a specified user.
+*  Accepts a friend request to a specified user.
 *
 *  Arguments:
 *      - userID (int): The UserID of the sender.
@@ -118,6 +118,58 @@ func AcceptFriendRequestUser(userID int, username string) error {
     _, err = insertStatement.Exec(userID, username);
     if err != nil {
         return fmt.Errorf("[ERROR] Failed to accpet friend request. %w", err);
+    }
+
+    return nil;
+}
+
+/*
+*  Rejects a friend request to a specified user.
+*
+*  Arguments:
+*      - userID (int): The UserID of the sender.
+*      - id (int): The Username of the receiver.
+*
+*  Returns:
+*      - error: An error if any occurred.
+*/
+func RejectFriendRequestUser(userID int, username string) error {
+    instance, err := db.GetMariaDB();
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+    }
+
+    query, err := instance.Connection.Prepare(
+        `SELECT * FROM FriendInvites WHERE
+            UserID = ? AND
+            User2ID = (SELECT UserID FROM Users WHERE Username = ?)
+        `,
+    );
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
+    }
+    defer query.Close();
+
+    var friendInvite FriendInvite;
+    err = query.QueryRow(userID, username).Scan(&friendInvite);
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to find friend request. %w", err);
+    }
+
+    deleteStatement, err := instance.Connection.Prepare(
+        `DELETE FROM FriendInvites WHERE
+            UserID = ? AND
+            User2ID = (SELECT UserID FROM Users WHERE Username = ?)
+        `,
+    );
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
+    }
+    defer deleteStatement.Close();
+
+    _, err = deleteStatement.Exec(userID, username);
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to delete friend request. %w", err);
     }
 
     return nil;
