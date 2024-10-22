@@ -16,6 +16,10 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Create User](#usercreate)
 - [Delete User](#userdelete)
 - [Send friend request](#userfriendinvite)
+- [Accept friend request](#userfriendaccept)
+- [Reject friend request](#userfriendreject)
+- [Remove friend](#userfriendremove)
+- [Get friend](#userfriendget)
 
 **Misc.**
 
@@ -263,7 +267,7 @@ $ sudo podman stop cs4389-api
 
 **Example**: `https://api.application.com/user/friend/invite`
 
-**Returns**: `200`, `400`
+**Returns**: `200`, `400`, `401`
 
 ```JSON
 {
@@ -276,5 +280,146 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 400,
     "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /user/friend/accept
+
+*Route to accept a friend request to a user.*
+
+**Method**: `POST`
+
+**Body**: `username`
+
+**Example**: `https://api.application.com/user/friend/accept`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /user/friend/reject
+
+*Route to reject a friend request to a user.*
+
+**Method**: `POST`
+
+**Body**: `username`
+
+**Example**: `https://api.application.com/user/friend/reject`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /user/friend/remove
+
+*Route to remove a friend from a user.*
+
+**Method**: `POST`
+
+**Body**: `username`
+
+**Example**: `https://api.application.com/user/friend/remove`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /user/friend/get
+
+*Route to get a list friend from a user.*
+
+**Method**: `GET`
+
+**Body**: `N/A`
+
+**Example**: `https://api.application.com/user/friend/get`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode":200,
+    "Data": {
+        "Friends": ["foo"]
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
 }
 ```
