@@ -73,8 +73,8 @@ func AcceptFriendRequestUser(userID int, username string) error {
 
     query, err := instance.Connection.Prepare(
         `SELECT * FROM FriendInvites WHERE
-            UserID = ? AND
-            User2ID = (SELECT UserID FROM Users WHERE Username = ?)
+            UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
+            User2ID = ?
         `,
     );
     if err != nil {
@@ -83,15 +83,17 @@ func AcceptFriendRequestUser(userID int, username string) error {
     defer query.Close();
 
     var friendInvite FriendInvite;
-    err = query.QueryRow(userID, username).Scan(&friendInvite);
+    err = query.QueryRow(username, userID).Scan(&friendInvite.UserID, &friendInvite.User2ID);
     if err != nil {
         return fmt.Errorf("[ERROR] Failed to find friend request. %w", err);
     }
 
     deleteStatement, err := instance.Connection.Prepare(
         `DELETE FROM FriendInvites WHERE
-            UserID = ? AND
-            User2ID = (SELECT UserID FROM Users WHERE Username = ?)
+            (UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
+            User2ID = ?) OR
+            (UserID = ? AND
+            User2ID = (SELECT UserID FROM Users WHERE Username = ?))
         `,
     );
     if err != nil {
@@ -99,15 +101,15 @@ func AcceptFriendRequestUser(userID int, username string) error {
     }
     defer deleteStatement.Close();
 
-    _, err = deleteStatement.Exec(userID, username);
+    _, err = deleteStatement.Exec(username, userID, userID, username);
     if err != nil {
         return fmt.Errorf("[ERROR] Failed to delete friend request. %w", err);
     }
 
     insertStatement, err := instance.Connection.Prepare(
         `INSERT INTO Friends(UserID, User2ID) Values(
-            ?,
-            (SELECT UserID FROM Users WHERE Username = ?)
+            (SELECT UserID FROM Users WHERE Username = ?),
+            ?
         )`,
     );
     if err != nil {
@@ -115,7 +117,7 @@ func AcceptFriendRequestUser(userID int, username string) error {
     }
     defer insertStatement.Close();
 
-    _, err = insertStatement.Exec(userID, username);
+    _, err = insertStatement.Exec(username, userID);
     if err != nil {
         return fmt.Errorf("[ERROR] Failed to accpet friend request. %w", err);
     }
@@ -141,8 +143,8 @@ func RejectFriendRequestUser(userID int, username string) error {
 
     query, err := instance.Connection.Prepare(
         `SELECT * FROM FriendInvites WHERE
-            UserID = ? AND
-            User2ID = (SELECT UserID FROM Users WHERE Username = ?)
+            UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
+            User2ID = ?
         `,
     );
     if err != nil {
@@ -151,15 +153,15 @@ func RejectFriendRequestUser(userID int, username string) error {
     defer query.Close();
 
     var friendInvite FriendInvite;
-    err = query.QueryRow(userID, username).Scan(&friendInvite);
+    err = query.QueryRow(username, userID).Scan(&friendInvite.UserID, &friendInvite.User2ID);
     if err != nil {
         return fmt.Errorf("[ERROR] Failed to find friend request. %w", err);
     }
 
     deleteStatement, err := instance.Connection.Prepare(
         `DELETE FROM FriendInvites WHERE
-            UserID = ? AND
-            User2ID = (SELECT UserID FROM Users WHERE Username = ?)
+            UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
+            User2ID = ?
         `,
     );
     if err != nil {
@@ -167,9 +169,46 @@ func RejectFriendRequestUser(userID int, username string) error {
     }
     defer deleteStatement.Close();
 
-    _, err = deleteStatement.Exec(userID, username);
+    _, err = deleteStatement.Exec(username, userID);
     if err != nil {
         return fmt.Errorf("[ERROR] Failed to delete friend request. %w", err);
+    }
+
+    return nil;
+}
+
+/*
+*  Removes a friend from a specified user.
+*
+*  Arguments:
+*      - userID (int): The UserID of the sender.
+*      - id (int): The Username of the receiver.
+*
+*  Returns:
+*      - error: An error if any occurred.
+*/
+func RemoveFriendUser(userID int, username string) error {
+    instance, err := db.GetMariaDB();
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+    }
+
+    deleteStatement, err := instance.Connection.Prepare(
+        `DELETE FROM Friends WHERE
+            (UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
+            User2ID = ?) OR
+            (UserID = ? AND
+            User2ID = (SELECT UserID FROM Users WHERE Username = ?))
+        `,
+    );
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
+    }
+    defer deleteStatement.Close();
+
+    _, err = deleteStatement.Exec(username, userID, userID, username);
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to remove friend. %w", err);
     }
 
     return nil;

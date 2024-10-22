@@ -328,7 +328,40 @@ $ sudo podman stop cs4389-api
 
 **Body**: `username`
 
-**Example**: `https://api.application.com/user/friend/accept`
+**Example**: `https://api.application.com/user/friend/reject`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /user/friend/remove
+
+*Route to remove a friend from a user.*
+
+**Method**: `POST`
+
+**Body**: `username`
+
+**Example**: `https://api.application.com/user/friend/remove`
 
 **Returns**: `200`, `400`, `401`
 

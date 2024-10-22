@@ -1,6 +1,6 @@
 /* =========================================================================
-*  File Name: controller/friendControllers/rejectUser.go
-*  Description: Controller for rejecting a friend request.
+*  File Name: controller/friendControllers/removeUser.go
+*  Description: Controller for removing a friend.
 *  Author: MagnusChase03
 *  =======================================================================*/
 package friendControllers
@@ -13,7 +13,7 @@ import (
 )
 
 /*
-*  Attempts to reject a friend request to a given user.
+*  Attempts to remove a friend from given user.
 *
 *  Arguments:
 *      - userID (int): The userID of the sending user.
@@ -24,13 +24,13 @@ import (
 *      - error: An error if any occurred.
 *
 */
-func RejectFriendRequestController(userID int, username string) (utils.JSONResponse, error) { 
-    err := models.RejectFriendRequestUser(userID, username);
+func RemoveFriendController(userID int, username string) (utils.JSONResponse, error) { 
+    err := models.RemoveFriendUser(userID, username);
     if err != nil {
         return utils.JSONResponse{
             StatusCode: 400,
-            Data: "Failed to reject friend request.",
-        }, fmt.Errorf("[ERROR] Failed to reject friend request. %w", err);
+            Data: "Failed to remove friend.",
+        }, fmt.Errorf("[ERROR] Failed to remove friend. %w", err);
     }
 
     return utils.JSONResponse{
