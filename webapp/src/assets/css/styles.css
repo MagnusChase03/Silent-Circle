@@ -417,33 +417,29 @@ body{
 
 #cg-right #cg-right-middle{
     height:30%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+    width:100%;
 }
 
 #cg-right #cg-right-middle #div-gr-name{
-    width: 50%;
-    text-align: center;
+    margin-left:50px;
+    margin-bottom: 20px;
+    display: inline-block;
 }
 
 #cg-right #cg-right-middle #div-gr-name input[type=text] {
     height: 80px;
     width: auto;
-    min-width: 300px;
-    color: #CCC;
     border-radius: 45px;
     border: 1px #648c98 solid;
-    font-size: 30px;
+    font-size: 3vw;
     padding-left: 100px;
     background: url(../img/teamwork-ico.png) no-repeat 45px 50%;
     background-color: #bee3ec
 }
 
 #cg-right #cg-right-middle #div-gr-btn{
-    width:50%;
-    text-align: left;
+    margin-left: 50px;
+    display: inline-block;
 }
 
 
@@ -459,16 +455,87 @@ body{
     background-repeat: repeat-y
 }
 
-
-#cg-right #cg-right-bottom img{
-    float:right;
-    margin-right: 50px;
+#cg-right #cg-right-bottom{
+    height: 40%;
 }
+    #cg-right #cg-right-bottom img{
+        float:right;
+        margin-right: 50px;
+        height: 100%;
+    }
 
 /* End Create Group Page */
 
-/* media query */
+/* Add Member Page */
+#cg-right #add-mem-right{
+    width:100%; 
+    height:100%;
+    
+}
 
+    #cg-right #add-mem-right #add-mem-right-top{
+        height:30%;
+        width:100%;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: flex-start;
+    }
+
+        #cg-right #add-mem-right #add-mem-right-top h1{
+            margin-bottom: 20px;
+            margin-left: 50px;
+            font-family: "Cookie", cursive;
+            font-size: 80px;
+            color: #516dc1
+        }
+
+    #cg-right #add-mem-right #add-mem-right-main{
+        height:70%;
+        width:100%;
+        
+    }
+        #cg-right #add-mem-right #add-mem-right-main #div-txt-username{
+            margin-left:50px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+            #cg-right #add-mem-right #add-mem-right-main #div-txt-username input[type=text]{
+                height: 80px;
+                width:auto;
+                border-radius: 45px;
+                border: 1px #648c98 solid;
+                font-size: 3vw;
+                padding-left: 100px;
+                background: url(../img/search-ico.png) no-repeat 45px 50%;
+                background-color: #bee3ec
+                
+            }
+        #cg-right #add-mem-right #add-mem-right-main #div-btn-find-user{
+            margin-left: 50px;
+            display: inline-block;
+        }
+            #cg-right #add-mem-right #add-mem-right-main #div-btn-find-user button{
+                color: #FFF;
+                border-radius: 45px;
+                border: 1px #FFF solid;
+                font-size: 30px;
+                background: url(../img/bg-btn-login.jpg);
+                background-size: cover;
+                background-repeat: repeat-y
+            }
+
+            #cg-right #add-mem-right #add-mem-right-main #div-btn-find-user p{
+                margin:20px 20px;
+                text-align: center;
+                font-weight: 100;
+                font-size: .6em;
+            }
+
+
+/* End Add Member Page */
+
+/* media query */
 @media screen and (max-width: 900px) {
     #login-logo{
         clear:both;
@@ -489,12 +556,6 @@ body{
     }
 
     /* Create Group Page */
-    #cg-right #cg-right-middle{
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: flex-start;
-    }
-
     #cg-right #cg-right-middle #div-gr-name,  #cg-right #cg-right-middle #div-gr-btn{
         margin-left: 50px;
     }
@@ -504,13 +565,17 @@ body{
         min-width: auto;
     }
 
-    #cg-right #cg-right-middle #div-gr-btn button {
-        min-width: auto;
-        width: 100%;
+    #cg-right #cg-right-top h1{
+        font-size: 10vw;
+        margin-right: 20px;
+    }
+
+    /* Add Member Page */
+    #cg-right #add-mem-right #add-mem-right-top h1{
+        font-size: 10vw;
+        margin-right: 20px;
     }
 }
-
-
 
 @media screen and (max-width: 700px) { 
     /* Welcome */
@@ -540,6 +605,15 @@ body{
     /* Create Group Page */
     #cg-right #cg-right-bottom{
         display: none;
+    }
+
+    #cg-right #cg-right-top {
+        height:30vw;
+    }
+
+
+    #cg-right #cg-right-top h1{
+        margin-bottom: 5px;
     }
 }
 
