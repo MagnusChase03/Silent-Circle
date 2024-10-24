@@ -418,6 +418,9 @@ body{
 #cg-right #cg-right-middle{
     height:30%;
     width:100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
 }
 
 #cg-right #cg-right-middle #div-gr-name{
@@ -493,6 +496,9 @@ body{
     #cg-right #add-mem-right #add-mem-right-main{
         height:70%;
         width:100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
         
     }
         #cg-right #add-mem-right #add-mem-right-main #div-txt-username{
