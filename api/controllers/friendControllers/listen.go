@@ -8,9 +8,7 @@ package friendControllers
 import (
     "fmt"
 
-    "github.com/MagnusChase03/CS4389-Project/models"
-    "github.com/MagnusChase03/CS4389-Project/utils"
-
+    "github.com/MagnusChase03/CS4389-Project/db"
     "github.com/gorilla/websocket"
 )
 
@@ -26,14 +24,29 @@ import (
 *
 */
 func FriendRequestListenerController(client *websocket.Conn, userID int) error { 
-    var data struct {
-        Message string
-    };
-    data.Message = "Hello World!";
-
-    err := client.WriteJSON(data);
+    db, err := db.GetRedisDB();
     if err != nil {
-        return fmt.Errorf("[ERROR] Failed to send message to client. %w", err);
+        return fmt.Errorf("[ERROR] Failed to get redis db. %w", err);
+    }
+
+    subscriber := db.Connection.Subscribe(db.Ctx, fmt.Sprintf("fr-%d", userID));
+    defer subscriber.Close();
+    
+    for {
+        msg, err := subscriber.ReceiveMessage(db.Ctx);
+        if err != nil {
+            return fmt.Errorf("[ERROR] Failed to receive message.");
+        }
+
+        var data struct {
+            Message string
+        };
+        data.Message = msg.Payload;
+
+        err = client.WriteJSON(data);
+        if err != nil {
+            return fmt.Errorf("[ERROR] Failed to send message to client. %w", err);
+        }
     }
 
     return nil;

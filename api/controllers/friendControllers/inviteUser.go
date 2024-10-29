@@ -8,6 +8,7 @@ package friendControllers
 import (
     "fmt"
 
+    "github.com/MagnusChase03/CS4389-Project/db"
     "github.com/MagnusChase03/CS4389-Project/models"
     "github.com/MagnusChase03/CS4389-Project/utils"
 )
@@ -25,12 +26,36 @@ import (
 *
 */
 func FriendRequestController(userID int, username string) (utils.JSONResponse, error) { 
-    err := models.FriendRequestUser(userID, username);
+    db, err := db.GetRedisDB();
+    if err != nil {
+        return utils.JSONResponse{
+            StatusCode: 400,
+            Data: "Failed to send friend request.",
+        }, fmt.Errorf("[ERROR] Failed to get redis db. %w", err);
+    }
+
+    err = models.FriendRequestUser(userID, username);
     if err != nil {
         return utils.JSONResponse{
             StatusCode: 400,
             Data: "Failed to send friend request.",
         }, fmt.Errorf("[ERROR] Failed to send friend request. %w", err);
+    }
+
+    user, err := models.GetUserByUsername(username);
+    if err != nil {
+        return utils.JSONResponse{
+            StatusCode: 400,
+            Data: "Failed to send friend request.",
+        }, fmt.Errorf("[ERROR] Failed to get user. %w", err);
+    }
+
+    err = db.Connection.Publish(db.Ctx, fmt.Sprintf("fr-%d", user.UserID), userID).Err();
+    if err != nil {
+        return utils.JSONResponse{
+            StatusCode: 400,
+            Data: "Failed to send friend request.",
+        }, fmt.Errorf("[ERROR] Failed to publish friend request. %w", err);
     }
 
     return utils.JSONResponse{

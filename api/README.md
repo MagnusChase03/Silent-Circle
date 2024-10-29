@@ -20,6 +20,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Reject friend request](#userfriendreject)
 - [Remove friend](#userfriendremove)
 - [Get friend](#userfriendget)
+- [Listen for friend request](#userfriendlisten)
 
 **Misc.**
 
@@ -423,3 +424,15 @@ $ sudo podman stop cs4389-api
     "Data": "Unauthorized"
 }
 ```
+
+### /user/friend/listen
+
+*Route to get a list friend from a user.*
+
+**Method**: `N/A`
+
+**Body**: `N/A`
+
+**Example**: `wss://api.application.com/user/friend/listen`
+
+**Returns**: `N/A`

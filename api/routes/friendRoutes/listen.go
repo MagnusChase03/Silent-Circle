@@ -27,8 +27,8 @@ import (
 *  Returns:
 *      - N/A
 */
-func FriendRequestListernerHandler(w http.ResponseWriter, r *http.Request) { 
-    upgrader := websocket.Upgrader{}
+func FriendRequestListenerHandler(w http.ResponseWriter, r *http.Request) { 
+    upgrader := websocket.Upgrader{CheckOrigin: utils.WebsocketOriginCheck}
     client, err := upgrader.Upgrade(w, r, nil);
     if err != nil {
         utils.SendBadRequest(w);
