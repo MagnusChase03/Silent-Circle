@@ -427,7 +427,7 @@ $ sudo podman stop cs4389-api
 
 ### /user/friend/listen
 
-*Route to get a list friend from a user.*
+*Websocket to listen for when friend requests occur for the user.*
 
 **Method**: `N/A`
 
