@@ -3,6 +3,7 @@
     import HomeMain from './HomeMain.vue';
     import MyLogo from './MyLogo.vue';
 </script>
+
 <template>
     <div id="wrapper-home">
         <MyNav></MyNav>
@@ -10,5 +11,6 @@
         <MyLogo></MyLogo>
     </div>
 </template>
+
 <style>
 </style>

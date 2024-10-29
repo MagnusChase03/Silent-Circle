@@ -1,7 +1,6 @@
 <script setup>
-// import imgWelcomeLogo from '@/assets/img/logo-welcome.png'
-import RandomImage from "@/assets/img/logo-welcome.png";
 </script>
+
 <template>
     <div id="wrapper">
         <div id="welcome-top">
@@ -32,6 +31,7 @@ import RandomImage from "@/assets/img/logo-welcome.png";
         </div>
     </div>
 </template>
+
 <style scoped>
     #btn-login a{
         text-decoration: none;

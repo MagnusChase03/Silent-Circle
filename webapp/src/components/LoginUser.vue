@@ -1,6 +1,5 @@
 <template>
     <div id="wrapper">
-        
         <div id="login-logo">
             <div id="div-logo">
             </div>
@@ -25,6 +24,7 @@
         </div>
     </div>
 </template>
+
 <script setup>
 import router from '@/router';
 
@@ -50,6 +50,7 @@ function login() {
     }).catch((error) => console.error("Unable to tetch data:",error));
 }
 </script>
+
 <style scoped>
 #div-login-form input {
     width: auto;
