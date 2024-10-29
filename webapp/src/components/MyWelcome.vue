@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="src/assets/css/styles.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cookie&family=Imperial+Script&display=swap" rel="stylesheet">
-    <title>Welcome to Silent Circle</title>
-
-</head>
-<body>
+<script setup>
+// import imgWelcomeLogo from '@/assets/img/logo-welcome.png'
+import RandomImage from "@/assets/img/logo-welcome.png";
+</script>
+<template>
     <div id="wrapper">
         <div id="welcome-top">
             <div id="div-btn-menu">
-                <button><img src="src/assets/img/menu-btn-welcome.png"></button>
+                <button><img src="../assets/img/menu-btn-welcome.png"></button>
             </div>
         </div>
         <div id="welcome-main">
@@ -22,7 +14,7 @@
             <div id="welcome-right">
                 <div id="div-logo">
                     <div>
-                        <img src="src/assets/img/logo-welcome.png">
+                        <img src="../assets/img/logo-welcome.png">
                     </div>
                     <h1>Slient Circle</h1>
                 </div>
@@ -30,12 +22,24 @@
                     <div id="div-login-wrap">
                         <button id="btn-create">Create an Account</button>
                         <p id="p-or">or</p>
-                        <button id="btn-login">Login</button>
+                        <button id="btn-login">
+                            <router-link to="/login">Log Me In</router-link>
+                        </button>
                         <p id="p-forgot">Forgot Password?</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+</template>
+<style scoped>
+    #btn-login a{
+        text-decoration: none;
+        color:#FFF;
+    }
+
+    #btn-login a:hover{
+        text-decoration: none;
+        color:#000;
+    }
+</style>
