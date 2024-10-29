@@ -68,7 +68,7 @@ func SendInternalServerError(w http.ResponseWriter, e error) {
 */
 func SendUnauthorizedRequest(w http.ResponseWriter) {
     w.Header().Set("Content-Type", "application/json");
-    w.WriteHeader(http.StatusInternalServerError);
+    w.WriteHeader(http.StatusUnauthorized);
     _ = json.NewEncoder(w).Encode(JSONResponse{
         StatusCode: 401,
         Data: "Unauthorized",
