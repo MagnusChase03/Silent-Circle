@@ -5,7 +5,7 @@
     <div id="wrapper">
         <div id="welcome-top">
             <div id="div-btn-menu">
-                <button><img src="../assets/img/menu-btn-welcome.png"></button>
+                <button><img src="/src/assets/img/menu-btn-welcome.png"></button>
             </div>
         </div>
         <div id="welcome-main">
@@ -13,13 +13,15 @@
             <div id="welcome-right">
                 <div id="div-logo">
                     <div>
-                        <img src="../assets/img/logo-welcome.png">
+                        <img src="/src/assets/img/logo-welcome.png">
                     </div>
                     <h1>Slient Circle</h1>
                 </div>
                 <div id="div-login">
                     <div id="div-login-wrap">
-                        <button id="btn-create">Create an Account</button>
+                        <button id="btn-create">
+                            <router-link to="/create-user">Create Account</router-link>
+                        </button>
                         <p id="p-or">or</p>
                         <button id="btn-login">
                             <router-link to="/login">Log Me In</router-link>
@@ -41,5 +43,15 @@
     #btn-login a:hover{
         text-decoration: none;
         color:#000;
+    }
+
+    #btn-create a{
+        text-decoration: none;
+        color:#000;
+    }
+
+    #btn-create a:hover{
+        text-decoration: none;
+        color:#FFF;
     }
 </style>
