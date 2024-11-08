@@ -125,6 +125,7 @@ func main() {
 
 	mux.Handle("/group/create", middleware.HandleWithMiddleware(
 		http.HandlerFunc(groupRoutes.CreateGroupHandler),
+		middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 		middleware.LogMiddleware,
 	))
