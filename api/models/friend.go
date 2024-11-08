@@ -3,22 +3,22 @@
 *  Description: Handles database interactions related to friends.
 *  Author: MagnusChase03
 *  =======================================================================*/
-package models;
+package models
 
 import (
-    "fmt"
-    "github.com/MagnusChase03/CS4389-Project/db"
+	"fmt"
+	"github.com/MagnusChase03/CS4389-Project/db"
 )
 
 type Friend struct {
-    UserID int
-    User2ID int
-};
+	UserID  int
+	User2ID int
+}
 
 type FriendInvite struct {
-    UserID int
-    User2ID int
-};
+	UserID  int
+	User2ID int
+}
 
 /*
 *  Send a friend request to a specified user.
@@ -29,30 +29,30 @@ type FriendInvite struct {
 *
 *  Returns:
 *      - error: An error if any occurred.
-*/
+ */
 func FriendRequestUser(userID int, username string) error {
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    insertStatement, err := instance.Connection.Prepare(
-        `INSERT INTO FriendInvites(UserID, User2ID) Values(
+	insertStatement, err := instance.Connection.Prepare(
+		`INSERT INTO FriendInvites(UserID, User2ID) Values(
             ?,
             (SELECT UserID FROM Users WHERE Username = ?)
         )`,
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer insertStatement.Close();
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer insertStatement.Close()
 
-    _, err = insertStatement.Exec(userID, username);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to send friend request. %w", err);
-    }
+	_, err = insertStatement.Exec(userID, username)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to send friend request. %w", err)
+	}
 
-    return nil;
+	return nil
 }
 
 /*
@@ -64,65 +64,65 @@ func FriendRequestUser(userID int, username string) error {
 *
 *  Returns:
 *      - error: An error if any occurred.
-*/
+ */
 func AcceptFriendRequestUser(userID int, username string) error {
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    query, err := instance.Connection.Prepare(
-        `SELECT * FROM FriendInvites WHERE
+	query, err := instance.Connection.Prepare(
+		`SELECT * FROM FriendInvites WHERE
             UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
             User2ID = ?
         `,
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer query.Close();
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer query.Close()
 
-    var friendInvite FriendInvite;
-    err = query.QueryRow(username, userID).Scan(&friendInvite.UserID, &friendInvite.User2ID);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to find friend request. %w", err);
-    }
+	var friendInvite FriendInvite
+	err = query.QueryRow(username, userID).Scan(&friendInvite.UserID, &friendInvite.User2ID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to find friend request. %w", err)
+	}
 
-    deleteStatement, err := instance.Connection.Prepare(
-        `DELETE FROM FriendInvites WHERE
+	deleteStatement, err := instance.Connection.Prepare(
+		`DELETE FROM FriendInvites WHERE
             (UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
             User2ID = ?) OR
             (UserID = ? AND
             User2ID = (SELECT UserID FROM Users WHERE Username = ?))
         `,
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer deleteStatement.Close();
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
 
-    _, err = deleteStatement.Exec(username, userID, userID, username);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to delete friend request. %w", err);
-    }
+	_, err = deleteStatement.Exec(username, userID, userID, username)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to delete friend request. %w", err)
+	}
 
-    insertStatement, err := instance.Connection.Prepare(
-        `INSERT INTO Friends(UserID, User2ID) Values(
+	insertStatement, err := instance.Connection.Prepare(
+		`INSERT INTO Friends(UserID, User2ID) Values(
             (SELECT UserID FROM Users WHERE Username = ?),
             ?
         )`,
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer insertStatement.Close();
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer insertStatement.Close()
 
-    _, err = insertStatement.Exec(username, userID);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to accpet friend request. %w", err);
-    }
+	_, err = insertStatement.Exec(username, userID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to accpet friend request. %w", err)
+	}
 
-    return nil;
+	return nil
 }
 
 /*
@@ -134,47 +134,47 @@ func AcceptFriendRequestUser(userID int, username string) error {
 *
 *  Returns:
 *      - error: An error if any occurred.
-*/
+ */
 func RejectFriendRequestUser(userID int, username string) error {
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    query, err := instance.Connection.Prepare(
-        `SELECT * FROM FriendInvites WHERE
+	query, err := instance.Connection.Prepare(
+		`SELECT * FROM FriendInvites WHERE
             UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
             User2ID = ?
         `,
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer query.Close();
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer query.Close()
 
-    var friendInvite FriendInvite;
-    err = query.QueryRow(username, userID).Scan(&friendInvite.UserID, &friendInvite.User2ID);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to find friend request. %w", err);
-    }
+	var friendInvite FriendInvite
+	err = query.QueryRow(username, userID).Scan(&friendInvite.UserID, &friendInvite.User2ID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to find friend request. %w", err)
+	}
 
-    deleteStatement, err := instance.Connection.Prepare(
-        `DELETE FROM FriendInvites WHERE
+	deleteStatement, err := instance.Connection.Prepare(
+		`DELETE FROM FriendInvites WHERE
             UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
             User2ID = ?
         `,
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer deleteStatement.Close();
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
 
-    _, err = deleteStatement.Exec(username, userID);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to delete friend request. %w", err);
-    }
+	_, err = deleteStatement.Exec(username, userID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to delete friend request. %w", err)
+	}
 
-    return nil;
+	return nil
 }
 
 /*
@@ -186,32 +186,32 @@ func RejectFriendRequestUser(userID int, username string) error {
 *
 *  Returns:
 *      - error: An error if any occurred.
-*/
+ */
 func RemoveFriendUser(userID int, username string) error {
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    deleteStatement, err := instance.Connection.Prepare(
-        `DELETE FROM Friends WHERE
+	deleteStatement, err := instance.Connection.Prepare(
+		`DELETE FROM Friends WHERE
             (UserID = (SELECT UserID FROM Users WHERE Username = ?) AND
             User2ID = ?) OR
             (UserID = ? AND
             User2ID = (SELECT UserID FROM Users WHERE Username = ?))
         `,
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer deleteStatement.Close();
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
 
-    _, err = deleteStatement.Exec(username, userID, userID, username);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to remove friend. %w", err);
-    }
+	_, err = deleteStatement.Exec(username, userID, userID, username)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to remove friend. %w", err)
+	}
 
-    return nil;
+	return nil
 }
 
 /*
@@ -223,15 +223,15 @@ func RemoveFriendUser(userID int, username string) error {
 *  Returns:
 *      - []string: A list of of the users friends.
 *      - error: An error if any occurred.
-*/
+ */
 func GetFriendUser(userID int) ([]string, error) {
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    query, err := instance.Connection.Prepare(
-        `SELECT Users.Username FROM Users JOIN
+	query, err := instance.Connection.Prepare(
+		`SELECT Users.Username FROM Users JOIN
             Friends ON
             Users.UserID = Friends.UserID OR
             Users.UserID = Friends.User2ID
@@ -239,25 +239,25 @@ func GetFriendUser(userID int) ([]string, error) {
             Friends.User2ID = ?) AND
             Users.UserID != ?
         `,
-    );
-    if err != nil {
-        return nil, fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer query.Close();
+	)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer query.Close()
 
-    rows, err := query.Query(userID, userID, userID);
-    if err != nil {
-        return nil, fmt.Errorf("[ERROR] Failed to find friends. %w", err);
-    }
+	rows, err := query.Query(userID, userID, userID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find friends. %w", err)
+	}
 
-    friends := make([]string, 0);
-    for rows.Next() {
-        var username string;
-        if err := rows.Scan(&username); err != nil {
-            return nil, fmt.Errorf("[ERROR] Failed to find friends. %w", err);
-        }
-        friends = append(friends, username);
-    }
+	friends := make([]string, 0)
+	for rows.Next() {
+		var username string
+		if err := rows.Scan(&username); err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find friends. %w", err)
+		}
+		friends = append(friends, username)
+	}
 
-    return friends, nil;
+	return friends, nil
 }
