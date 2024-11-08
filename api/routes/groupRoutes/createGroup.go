@@ -1,24 +1,23 @@
 /* =========================================================================
-*  File Name: routes/userRoutes/updateUser.go
-*  Description: Handler for updating user information.
-*  Author: MagnusChase03
+*  File Name: routes/groupRoutes/createGroup.go
+*  Description: Handler for creating groups.
+*  Author: Matthew-Basinger
 *  =======================================================================*/
-package userRoutes
+package groupRoutes
 
 import (
     "os"
     "fmt"
     "net/http"
-    "crypto/sha256"
-    "encoding/hex"
+
 
     "github.com/MagnusChase03/CS4389-Project/utils"
     "github.com/MagnusChase03/CS4389-Project/session"
-    "github.com/MagnusChase03/CS4389-Project/controllers/userControllers"
+    "github.com/MagnusChase03/CS4389-Project/controllers/groupControllers"
 )
 
 /*
-*  Handles the control flow for the update user route.
+*  Handles the control flow for the creation of group routes.
 *
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
@@ -27,20 +26,20 @@ import (
 *  Returns:
 *      - N/A
 */
-func UpdateUserHandler(w http.ResponseWriter, r *http.Request) { 
+func CreateGroupHandler(w http.ResponseWriter, r *http.Request) { 
     if r.Method != "POST" {
         utils.SendBadRequest(w);
         return;
     }
 
     cookie, err := r.Cookie("authCookie");
-    if err != nil {
+    if err != nil{
         utils.SendUnauthorizedRequest(w);
         return;
     }
 
     userID, _, err := session.ParseUserCookie(cookie.Value);
-    if err != nil {
+    if err != nil{
         utils.SendUnauthorizedRequest(w);
         return;
     }
@@ -52,23 +51,14 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
         return;
     }
 
-    password := r.FormValue("password");
-    publicKey := r.FormValue("publicKey");
-    if password == "" || publicKey == "" {
-        fmt.Printf("[ERROR] Password or public key empty.\n");
+    groupname := r.FormValue("groupname");
+    if groupname == "" {
+        fmt.Printf("[ERROR] groupname empty.\n");
         utils.SendBadRequest(w);
         return;
     }
 
-    hasher := sha256.New();
-    _, err = hasher.Write([]byte(password));
-    if err != nil {
-        utils.SendInternalServerError(w, err);
-        return;
-    }
-    password = hex.EncodeToString(hasher.Sum(nil));
-
-    resp, err := userControllers.UpdateUserController(userID, password, publicKey);
+    resp, err := groupControllers.CreateGroupController(userID, groupname);
     if err != nil {
         fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err);
     }

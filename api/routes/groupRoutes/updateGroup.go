@@ -1,24 +1,23 @@
 /* =========================================================================
-*  File Name: routes/userRoutes/updateUser.go
+*  File Name: routes/groupRoutes/updateGroup.go
 *  Description: Handler for updating user information.
-*  Author: MagnusChase03
+*  Author: Matthew-Basinger
 *  =======================================================================*/
-package userRoutes
+package groupRoutes
 
 import (
     "os"
     "fmt"
     "net/http"
-    "crypto/sha256"
-    "encoding/hex"
+    "strconv"
 
     "github.com/MagnusChase03/CS4389-Project/utils"
     "github.com/MagnusChase03/CS4389-Project/session"
-    "github.com/MagnusChase03/CS4389-Project/controllers/userControllers"
+    "github.com/MagnusChase03/CS4389-Project/controllers/groupControllers"
 )
 
 /*
-*  Handles the control flow for the update user route.
+*  Handles the control flow for the update group route.
 *
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
@@ -27,7 +26,7 @@ import (
 *  Returns:
 *      - N/A
 */
-func UpdateUserHandler(w http.ResponseWriter, r *http.Request) { 
+func UpdateGroupHandler(w http.ResponseWriter, r *http.Request) { 
     if r.Method != "POST" {
         utils.SendBadRequest(w);
         return;
@@ -51,24 +50,16 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
         utils.SendBadRequest(w);
         return;
     }
-
-    password := r.FormValue("password");
-    publicKey := r.FormValue("publicKey");
-    if password == "" || publicKey == "" {
-        fmt.Printf("[ERROR] Password or public key empty.\n");
+	//
+	groupname := r.FormValue("groupname");
+    groupID,err := strconv.Atoi(r.FormValue("groupID"));
+    if groupname == ""{
+        fmt.Printf("[ERROR] groupname empty.\n");
         utils.SendBadRequest(w);
         return;
     }
 
-    hasher := sha256.New();
-    _, err = hasher.Write([]byte(password));
-    if err != nil {
-        utils.SendInternalServerError(w, err);
-        return;
-    }
-    password = hex.EncodeToString(hasher.Sum(nil));
-
-    resp, err := userControllers.UpdateUserController(userID, password, publicKey);
+    resp, err := groupControllers.UpdateGroupController(userID, groupname, groupID);
     if err != nil {
         fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err);
     }
