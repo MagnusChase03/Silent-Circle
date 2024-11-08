@@ -54,8 +54,8 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 
     password := r.FormValue("password");
     publicKey := r.FormValue("publicKey");
-    if password == "" || publicKey == "" {
-        fmt.Printf("[ERROR] Password or public key empty.\n");
+    if password == "" && publicKey == "" {
+        fmt.Printf("[ERROR] Password and public key empty.\n");
         utils.SendBadRequest(w);
         return;
     }

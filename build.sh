@@ -18,7 +18,7 @@ fi
 # Returns:
 #     - N/A
 function buildContainer() {
-    docker build -t localhost/cs4389-$1 -f $2/Dockerfile .
+    $CR build -t localhost/cs4389-$1 -f $2/Dockerfile .
 }
 
 
