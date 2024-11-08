@@ -1,9 +1,9 @@
 /* =========================================================================
-*  File Name: controller/userController/deleteUser.go
-*  Description: Controller for deleting a user.
+*  File Name: controller/groupController/createGroup.go
+*  Description: Controller for creating a group.
 *  Author: MagnusChase03
 *  =======================================================================*/
-package userControllers
+package groupControllers
 
 import (
 	"fmt"
@@ -13,23 +13,24 @@ import (
 )
 
 /*
-*  Attempts to create a new user with given attributes.
+*  Attempts to create a new group with given attributes.
 *
 *  Arguments:
-*      - userID (int): The userID.
+*      - creatorID (int): The ID of the creator of the group.
+*      - groupName (string): The name of the group
 *
 *  Returns:
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
  */
-func DeleteUserController(userID int) (utils.JSONResponse, error) {
-	err := models.DeleteUser(userID)
+func CreateGroupController(creatorID int, groupname string) (utils.JSONResponse, error) {
+	err := models.CreateGroup(creatorID, groupname)
 	if err != nil {
 		return utils.JSONResponse{
-			StatusCode: 400,
-			Data:       "Failed to delete user.",
-		}, fmt.Errorf("[ERROR] Failed to delete user. %w", err)
+			StatusCode: 401,
+			Data:       "Failed to create grou[].",
+		}, fmt.Errorf("[ERROR] Failed to create group. %w", err)
 	}
 
 	return utils.JSONResponse{
