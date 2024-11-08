@@ -436,3 +436,9 @@ $ sudo podman stop cs4389-api
 **Example**: `wss://api.application.com/user/friend/listen`
 
 **Returns**: `N/A`
+
+```JSON
+{
+    "Message": "root"
+}
+```

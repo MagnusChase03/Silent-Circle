@@ -50,7 +50,15 @@ func FriendRequestController(userID int, username string) (utils.JSONResponse, e
         }, fmt.Errorf("[ERROR] Failed to get user. %w", err);
     }
 
-    err = db.Connection.Publish(db.Ctx, fmt.Sprintf("fr-%d", user.UserID), userID).Err();
+    sendingUser, err := models.GetUserByID(userID);
+    if err != nil {
+        return utils.JSONResponse{
+            StatusCode: 400,
+            Data: "Failed to send friend request.",
+        }, fmt.Errorf("[ERROR] Failed to get user. %w", err);
+    }
+
+    err = db.Connection.Publish(db.Ctx, fmt.Sprintf("fr-%d", user.UserID), sendingUser.Username).Err();
     if err != nil {
         return utils.JSONResponse{
             StatusCode: 400,
