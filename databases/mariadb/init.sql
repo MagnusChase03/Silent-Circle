@@ -81,10 +81,12 @@ INSERT INTO Users(
     'rootpublickey'
 );
 
-INSERT INTO Groups(
-    CreatorID,
-    GroupName
+INSERT INTO Users(
+    Username,
+    PasswordHash,
+    PublicKey
 ) VALUES(
-    1,
-    'partyPeople'
-)
+    'foo',
+    'a7fa53aec98816e82823c7c04e6b01cc67e585213c5d71f2d58326e7513e4688',
+    'foopublickey'
+);

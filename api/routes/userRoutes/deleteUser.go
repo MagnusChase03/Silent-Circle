@@ -21,11 +21,11 @@ import (
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
 *      - r (*http.Request): The request being made from the client.
-* 
+*
 *  Returns:
 *      - N/A
 */
-func DeleteUserHandler(w http.ResponseWriter, r *http.Request) { 
+func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method != "POST" {
         utils.SendBadRequest(w);
         return;

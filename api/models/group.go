@@ -117,7 +117,7 @@ func DeleteGroup(groupname string) error {
 }
 
 /*
-*  Locates a group in the database with given groupname.
+*  Determines the creatorID of a group in the database with given groupname.
 *
 *  Arguments:
 *      - groupname (string): The groupname.
@@ -149,4 +149,41 @@ func GetCreatorIDByGroupName(groupname string) (int, error) {
     }
 
     return group.CreatorID, nil;
+}
+
+/*
+*  Update a group in the database with given attributes.
+*
+*  Arguments:
+*      - userID (int): The userID to update.
+*      - groupname (string): The new groupname for the group.
+*      - groupID (string): The groupID of the group.
+*  
+*  Returns:
+*      - error: An error if any occurred.
+*
+*/
+func UpdateGroup(userID int, groupname string, groupID int) error {
+    instance, err := db.GetMariaDB();
+    if err != nil {
+        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+    }
+    if groupname == "" {
+        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
+    } else {    //
+        updateStatement, err := instance.Connection.Prepare(
+            "UPDATE Groups SET GroupName=?, WHERE GroupID=?",
+        );
+        if err != nil {
+            return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
+        }
+        defer updateStatement.Close();
+
+        _, err = updateStatement.Exec(groupname, groupID);
+        if err != nil {
+            return fmt.Errorf("[ERROR] Failed to update user. %w", err);
+        }
+    }
+
+    return nil;
 }

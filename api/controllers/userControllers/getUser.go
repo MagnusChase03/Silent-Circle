@@ -27,9 +27,9 @@ func GetUserController(username string) (utils.JSONResponse, error) {
     user, err := models.GetUserByUsername(username);
     if err != nil {
         return utils.JSONResponse{
-            StatusCode: 401,
-            Data: "Failed to create user.",
-        }, fmt.Errorf("[ERROR] Failed to create user. %w", err);
+            StatusCode: 400,
+            Data: "Failed to get user.",
+        }, fmt.Errorf("[ERROR] Failed to get user. %w", err);
     }
 
     var responseStruct struct {

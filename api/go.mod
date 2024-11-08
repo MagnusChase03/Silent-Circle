@@ -6,12 +6,14 @@ replace github.com/MagnusChase03/CS4389-Project/routes => ./routes
 replace github.com/MagnusChase03/CS4389-Project/routes/authRoutes => ./routes/authRoutes
 replace github.com/MagnusChase03/CS4389-Project/routes/groupRoutes => ./routes/groupRoutes
 replace github.com/MagnusChase03/CS4389-Project/routes/userRoutes => ./routes/userRoutes
+replace github.com/MagnusChase03/CS4389-Project/routes/friendRoutes => ./routes/friendRoutes
 
 
 replace github.com/MagnusChase03/CS4389-Project/controllers => ./controllers
 replace github.com/MagnusChase03/CS4389-Project/controllers/authControllers => ./controllers/authControllers
 replace github.com/MagnusChase03/CS4389-Project/controllers/groupControllers => ./controllers/groupControllers
 replace github.com/MagnusChase03/CS4389-Project/controllers/userControllers => ./controllers/userControllers
+replace github.com/MagnusChase03/CS4389-Project/controllers/friendControllers => ./controllers/friendControllers
 
 replace github.com/MagnusChase03/CS4389-Project/middleware => ./middleware
 replace github.com/MagnusChase03/CS4389-Project/utils => ./utils
@@ -25,4 +27,5 @@ require (
     github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
     github.com/go-redis/redis/v8 v8.11.5 // indirect
     github.com/go-sql-driver/mysql v1.8.1 // indirect
+    github.com/gorilla/websocket v1.5.3 // indirect
 )

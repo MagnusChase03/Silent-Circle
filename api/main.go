@@ -14,6 +14,7 @@ import (
     "github.com/MagnusChase03/CS4389-Project/routes/authRoutes"
     "github.com/MagnusChase03/CS4389-Project/routes/userRoutes"
     "github.com/MagnusChase03/CS4389-Project/routes/groupRoutes"
+    "github.com/MagnusChase03/CS4389-Project/routes/friendRoutes"
     "github.com/MagnusChase03/CS4389-Project/middleware"
     "github.com/MagnusChase03/CS4389-Project/db"
 )
@@ -60,6 +61,13 @@ func main() {
         middleware.LogMiddleware,
     ));
 
+    mux.Handle("/user/update", middleware.HandleWithMiddleware(
+        http.HandlerFunc(userRoutes.UpdateUserHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
+
     mux.Handle("/user/create", middleware.HandleWithMiddleware(
         http.HandlerFunc(userRoutes.CreateUserHandler),
         middleware.CorsMiddleware,
@@ -68,6 +76,48 @@ func main() {
 
     mux.Handle("/user/delete", middleware.HandleWithMiddleware(
         http.HandlerFunc(userRoutes.DeleteUserHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
+
+    mux.Handle("/user/friend/invite", middleware.HandleWithMiddleware(
+        http.HandlerFunc(friendRoutes.FriendRequestHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
+
+    mux.Handle("/user/friend/accept", middleware.HandleWithMiddleware(
+        http.HandlerFunc(friendRoutes.AcceptFriendRequestHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
+
+    mux.Handle("/user/friend/reject", middleware.HandleWithMiddleware(
+        http.HandlerFunc(friendRoutes.RejectFriendRequestHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
+
+    mux.Handle("/user/friend/remove", middleware.HandleWithMiddleware(
+        http.HandlerFunc(friendRoutes.RemoveFriendHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
+
+    mux.Handle("/user/friend/get", middleware.HandleWithMiddleware(
+        http.HandlerFunc(friendRoutes.GetFriendHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
+
+    mux.Handle("/user/friend/listen", middleware.HandleWithMiddleware(
+        http.HandlerFunc(friendRoutes.FriendRequestListenerHandler),
         middleware.AuthMiddleware,
         middleware.CorsMiddleware,
         middleware.LogMiddleware,
@@ -86,6 +136,12 @@ func main() {
         middleware.LogMiddleware,
     ));
 
+    mux.Handle("/group/update", middleware.HandleWithMiddleware(
+        http.HandlerFunc(groupRoutes.UpdateGroupHandler),
+        middleware.AuthMiddleware,
+        middleware.CorsMiddleware,
+        middleware.LogMiddleware,
+    ));
     // Start HTTPS server on port 8080
     fmt.Printf("[LOG] Starting API server on 0.0.0.0:8080.\n");
     if err := http.ListenAndServeTLS("0.0.0.0:8080", "/certs/server.crt", "/certs/server.key", mux); err != nil {
