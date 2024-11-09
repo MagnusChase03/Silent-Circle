@@ -3,16 +3,16 @@
         <div id="home-menu-top">
             <button><img src="../assets/img/arrow-left-ico.png" alt="Go back"></button>
         </div>
-        <div id="home-new-chat">
-            <button><img src="../assets/img/new-message-ico.png" alt="New message"></button>
+        <div id="home-new-group">
+            <button><img src="../assets/img/add-group-ico.png" alt="New message"></button>
             <h5>New Chat</h5>
         </div>
-        <div id="home-chats">
-            <button><img src="../assets/img/chat-bubble-ico.png" alt="New chats"></button>
+        <div id="home-invite-user">
+            <button><img src="../assets/img/invate-user-ico.png" alt="New chats"></button>
             <h5>Chats</h5>
         </div>
-        <div id="home-contacts">
-            <button><img src="../assets/img/contact-book-blue-ico.png" alt="Contacts"></button>
+        <div id="home-btn">
+            <button><img src="../assets/img/home-ico.png" alt="Contacts"></button>
             <h5>Contacts</h5>
         </div>
         <div id="home-privacy">
