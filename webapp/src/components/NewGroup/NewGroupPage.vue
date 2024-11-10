@@ -1,16 +1,16 @@
 <template>
     <div id="wrapper-home">
         <NavBar></NavBar>
-        <div id="home-right">
 
-            <!-- Insert you main content here -->
-            <h1>New Group Page</h1>
-
+        <!-- Insert your content or any component here -->
+        <div style="width: 100%; height: 100%;">
+            <h1>This Is New Group Page Again after fix</h1>
         </div>
+        <!-- End of main content -->
+
         <SCLogo></SCLogo>
     </div>
 </template>
-
 <script>
     import NavBar from '../NavBar.vue';
     import SCLogo from '../SCLogo.vue';
