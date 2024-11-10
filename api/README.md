@@ -27,6 +27,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Group Accept](#groupinviteaccept)
 - [Group Reject](#groupinvitereject)
 - [Listen for group invites](#groupinvitelisten)
+- [Listen for group chat](#groupchat)
 
 **Misc.**
 
@@ -563,5 +564,31 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "Message": "1-FunnyGroup"
+}
+```
+
+### /group/chat
+
+*Websocket to handle real time chat.*
+
+**Method**: `N/A`
+
+**Body**: `N/A`
+
+**Example**: `wss://api.application.com/group/chat?group=1`
+
+**Returns**: `N/A`
+
+`Read`
+```JSON
+{
+    "Message": "root-<Encrypted Message>"
+}
+```
+
+`Write`
+```JSON
+{
+    "Message": "<Encrypted Message>"
 }
 ```
