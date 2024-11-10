@@ -6,10 +6,10 @@
 package groupControllers
 
 import (
-    "fmt"
+	"fmt"
 
-    "github.com/MagnusChase03/CS4389-Project/models"
-    "github.com/MagnusChase03/CS4389-Project/utils"
+	"github.com/MagnusChase03/CS4389-Project/models"
+	"github.com/MagnusChase03/CS4389-Project/utils"
 )
 
 /*
@@ -18,36 +18,36 @@ import (
 *  Arguments:
 *      - groupname (string): The groupname.
 *	   - userID (int): The ID of the user
-* 
+*
 *  Returns:
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
-*/
-func DeleteGroupController(groupname string, userID int) (utils.JSONResponse, error) { 
-	creatorID, err := models.GetCreatorIDByGroupName(groupname);
+ */
+func DeleteGroupController(groupname string, userID int) (utils.JSONResponse, error) {
+	creatorID, err := models.GetCreatorIDByGroupName(groupname)
 	if err != nil {
 		return utils.JSONResponse{
-            StatusCode: 401,
-            Data: "Failed to delete group.",
-        }, fmt.Errorf("[ERROR] Failed to delete group. %w", err);
-	} else if creatorID != userID{
+			StatusCode: 401,
+			Data:       "Failed to delete group.",
+		}, fmt.Errorf("[ERROR] Failed to delete group. %w", err)
+	} else if creatorID != userID {
 		return utils.JSONResponse{
-            StatusCode: 401,
-            Data: "Failed to delete group.",
-        }, fmt.Errorf("[ERROR] Not group creator. %w", err);
+			StatusCode: 401,
+			Data:       "Failed to delete group.",
+		}, fmt.Errorf("[ERROR] Not group creator. %w", err)
 	}
 
-    err = models.DeleteGroup(groupname);
-    if err != nil {
-        return utils.JSONResponse{
-            StatusCode: 401,
-            Data: "Failed to delete group.",
-        }, fmt.Errorf("[ERROR] Failed to delete group. %w", err);
-    }
+	err = models.DeleteGroup(groupname)
+	if err != nil {
+		return utils.JSONResponse{
+			StatusCode: 401,
+			Data:       "Failed to delete group.",
+		}, fmt.Errorf("[ERROR] Failed to delete group. %w", err)
+	}
 
-    return utils.JSONResponse{
-        StatusCode: 200,
-        Data: "Ok",
-    }, nil;
+	return utils.JSONResponse{
+		StatusCode: 200,
+		Data:       "Ok",
+	}, nil
 }

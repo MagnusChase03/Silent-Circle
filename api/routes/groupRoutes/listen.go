@@ -1,7 +1,7 @@
 /* =========================================================================
-*  File Name: routes/groupRoutes/updateGroup.go
-*  Description: Handler for updating user information.
-*  Author: Matthew-Basinger
+*  File Name: routes/groupRoutes/listen.go
+*  Description: Handler for listening for group invite requests.
+*  Author: MagnusChase03
 *  =======================================================================*/
 package groupRoutes
 
@@ -9,15 +9,16 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/MagnusChase03/CS4389-Project/controllers/groupControllers"
 	"github.com/MagnusChase03/CS4389-Project/session"
 	"github.com/MagnusChase03/CS4389-Project/utils"
+
+	"github.com/gorilla/websocket"
 )
 
 /*
-*  Handles the control flow for the update group route.
+*  Handles the control flow for listening for group invite requests via redis pub/sub
 *
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
@@ -26,11 +27,14 @@ import (
 *  Returns:
 *      - N/A
  */
-func UpdateGroupHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+func GroupInviteListenerHandler(w http.ResponseWriter, r *http.Request) {
+	upgrader := websocket.Upgrader{CheckOrigin: utils.WebsocketOriginCheck}
+	client, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
 		utils.SendBadRequest(w)
 		return
 	}
+	defer client.Close()
 
 	cookie, err := r.Cookie("authCookie")
 	if err != nil {
@@ -44,27 +48,8 @@ func UpdateGroupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = r.ParseForm()
-	if err != nil {
-		fmt.Printf("[ERROR] Failed to parse form.\n")
-		utils.SendBadRequest(w)
-		return
-	}
-	//
-	groupname := r.FormValue("groupname")
-	groupID, err := strconv.Atoi(r.FormValue("groupID"))
-	if groupname == "" {
-		fmt.Printf("[ERROR] groupname empty.\n")
-		utils.SendBadRequest(w)
-		return
-	}
-
-	resp, err := groupControllers.UpdateGroupController(userID, groupname, groupID)
+	err = groupControllers.GroupInviteListenerController(client, userID)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err)
-	}
-
-	if err := utils.SendResponse(w, resp); err != nil {
-		utils.SendInternalServerError(w, err)
 	}
 }

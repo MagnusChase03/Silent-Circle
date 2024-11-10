@@ -1,9 +1,9 @@
 /* =========================================================================
-*  File Name: controller/userController/getUser.go
-*  Description: Controller for getting user public key.
+*  File Name: controller/groupControllers/rejectGroup.go
+*  Description: Controller for rejecting a friend request.
 *  Author: MagnusChase03
 *  =======================================================================*/
-package userControllers
+package groupControllers
 
 import (
 	"fmt"
@@ -13,32 +13,28 @@ import (
 )
 
 /*
-*  Attempts to get the users public key.
+*  Attempts to reject an invite request.
 *
 *  Arguments:
-*      - username (string): The username of the user.
+*      - userID (int): The userID of the sending user.
+*      - groupID (int): The groupID of the group.
 *
 *  Returns:
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
  */
-func GetUserController(username string) (utils.JSONResponse, error) {
-	user, err := models.GetUserByUsername(username)
+func RejectGroupInviteController(userID int, groupID int) (utils.JSONResponse, error) {
+	err := models.RejectGroupInvite(userID, groupID)
 	if err != nil {
 		return utils.JSONResponse{
 			StatusCode: 400,
-			Data:       "Failed to get user.",
-		}, fmt.Errorf("[ERROR] Failed to get user. %w", err)
+			Data:       "Failed to reject invite request.",
+		}, fmt.Errorf("[ERROR] Failed to reject invite request. %w", err)
 	}
-
-	var responseStruct struct {
-		PublicKey string
-	}
-	responseStruct.PublicKey = user.PublicKey
 
 	return utils.JSONResponse{
 		StatusCode: 200,
-		Data:       responseStruct,
+		Data:       "Ok",
 	}, nil
 }
