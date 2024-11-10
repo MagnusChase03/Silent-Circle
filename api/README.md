@@ -24,6 +24,8 @@ functionallity of an end-to-end encrypted group messenger.*
 
 **Group**
 - [Group Invite](#groupinvite)
+- [Group Accept](#groupinviteaccept)
+- [Group Reject](#groupinvitereject)
 
 **Misc.**
 
@@ -453,6 +455,74 @@ $ sudo podman stop cs4389-api
 **Body**: `username`, `key`, `group` (groupID)
 
 **Example**: `https://api.application.com/group/invite`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/accept
+
+*Route to accept a given group invite.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite/accept`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": {
+        "EncryptedKey": "supersecretkey"
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/reject
+
+*Route to reject a given group invite.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite/accept`
 
 **Returns**: `200`, `400`, `401`
 

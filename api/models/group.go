@@ -260,3 +260,90 @@ func SendGroupInvite(userID int, username string, encryptedKey string, groupID i
 
 	return nil
 }
+
+/*
+*  Accepts the given group invite.
+*
+*  Arguments:
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*
+*  Returns:
+*      - string: The encrypted key from the invite.
+*      - error: An error if any occurred.
+*
+ */
+func AcceptGroupInvite(userID int, groupID int) (string, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	// Ensure invite exist
+	query, err := instance.Connection.Prepare(
+		"SELECT EncryptedKey FROM GroupInvites WHERE UserID = ? AND GroupID = ?",
+	)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var encryptedKey string
+	err = query.QueryRow(userID, groupID).Scan(&encryptedKey)
+	if err != nil {
+		return "", fmt.Errorf(
+			"[ERROR] Could not find invite. %w",
+			err,
+		)
+	}
+
+	// Delete invite
+	deleteStatement, err := instance.Connection.Prepare(
+		"DELETE FROM GroupInvites WHERE UserID = ? AND GroupID = ?",
+	)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
+
+	_, err = deleteStatement.Exec(userID, groupID)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to delete invite. %w", err)
+	}
+
+	return encryptedKey, nil
+}
+
+/*
+*  Rejects the given group invite.
+*
+*  Arguments:
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*
+*  Returns:
+*      - error: An error if any occurred.
+*
+ */
+func RejectGroupInvite(userID int, groupID int) error {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	// Delete invite
+	deleteStatement, err := instance.Connection.Prepare(
+		"DELETE FROM GroupInvites WHERE UserID = ? AND GroupID = ?",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
+
+	_, err = deleteStatement.Exec(userID, groupID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to delete invite. %w", err)
+	}
+
+	return nil
+}

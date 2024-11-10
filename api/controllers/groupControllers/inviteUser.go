@@ -60,7 +60,7 @@ func GroupInviteController(userID int, username string, encryptedKey string, gro
 		}, fmt.Errorf("[ERROR] Failed to get user. %w", err)
 	}
 
-	err = db.Connection.Publish(db.Ctx, fmt.Sprintf("gr-%d", user.UserID), group.GroupName).Err()
+	err = db.Connection.Publish(db.Ctx, fmt.Sprintf("gr-%d", user.UserID), fmt.Sprintf("%d-%s", groupID, group.GroupName)).Err()
 	if err != nil {
 		return utils.JSONResponse{
 			StatusCode: 400,
