@@ -1,7 +1,7 @@
 /* =========================================================================
 *  File Name: controller/groupController/createGroup.go
 *  Description: Controller for creating a group.
-*  Author: MagnusChase03
+*  Author: Matthew-Basinger
 *  =======================================================================*/
 package groupControllers
 
@@ -23,7 +23,7 @@ import (
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
- */
+*/
 func CreateGroupController(creatorID int, groupname string) (utils.JSONResponse, error) {
 	err := models.CreateGroup(creatorID, groupname)
 	if err != nil {
