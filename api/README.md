@@ -22,6 +22,11 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Get friend](#userfriendget)
 - [Listen for friend request](#userfriendlisten)
 
+**Group**
+- [Update Group](#groupupdate)
+- [Create Group](#groupcreate)
+- [Delete Group](#groupdelete)
+
 **Misc.**
 
 - [Healthcheck](#healthcheck)
@@ -436,3 +441,97 @@ $ sudo podman stop cs4389-api
 **Example**: `wss://api.application.com/user/friend/listen`
 
 **Returns**: `N/A`
+
+/\/\/\/\/\/\/\
+
+### /group/create
+
+*Route to create a new group.*
+
+**Method**: `POST`
+
+**Body**: `creatorID`, `groupname`
+
+**Example**: `https://api.application.com/group/create`
+
+**Returns**: `200`, `400`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+### /group/delete
+
+*Route to create a delete a group.*
+
+**Method**: `POST`
+
+**Body**: `groupame`
+
+**Example**: `https://api.application.com/group/delete`
+
+**Returns**: `200`, `401`, `400`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/update
+
+*Route to updates a group.*
+
+**Method**: `POST`
+
+**Body**: `userID`, `groupname`, `groupID`
+
+**Example**: `https://api.application.com/group/update`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Invalid userID"
+}
+```

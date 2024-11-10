@@ -1,7 +1,7 @@
 /* =========================================================================
 *  File Name: controller/groupController/createGroup.go
 *  Description: Controller for creating a group.
-*  Author: MagnusChase03
+*  Author: Matthew-Basinger
 *  =======================================================================*/
 package groupControllers
 
@@ -29,7 +29,7 @@ func CreateGroupController(creatorID int, groupname string) (utils.JSONResponse,
     if err != nil {
         return utils.JSONResponse{
             StatusCode: 401,
-            Data: "Failed to create grou[].",
+            Data: "Failed to create group.",
         }, fmt.Errorf("[ERROR] Failed to create group. %w", err);
     }
 
