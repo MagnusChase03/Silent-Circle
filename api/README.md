@@ -26,6 +26,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Group Invite](#groupinvite)
 - [Group Accept](#groupinviteaccept)
 - [Group Reject](#groupinvitereject)
+- [Listen for group invites](#groupinvitelisten)
 
 **Misc.**
 
@@ -544,5 +545,23 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 401,
     "Data": "Unauthorized"
+}
+```
+
+### /group/invite/listen
+
+*Websocket to listen for when group invite requests occur for the user.*
+
+**Method**: `N/A`
+
+**Body**: `N/A`
+
+**Example**: `wss://api.application.com/group/invite/listen`
+
+**Returns**: `N/A`
+
+```JSON
+{
+    "Message": "1-FunnyGroup"
 }
 ```

@@ -1,7 +1,7 @@
 /* =========================================================================
 *  File Name: models/group.go
 *  Description: Handles database interactions related to groups.
-*  Author: Matthew-Basinger
+*  Author: Zachary, Matthew-Basinger
 *  =======================================================================*/
 package models
 
