@@ -22,6 +22,9 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Get friend](#userfriendget)
 - [Listen for friend request](#userfriendlisten)
 
+**Group**
+- [Group Invite](#groupinvite)
+
 **Misc.**
 
 - [Healthcheck](#healthcheck)
@@ -438,5 +441,38 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "Message": "root"
+}
+```
+
+### /group/invite
+
+*Route to send a group invite to a user.*
+
+**Method**: `POST`
+
+**Body**: `username`, `key`, `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
 }
 ```
