@@ -364,7 +364,7 @@ body{
     border: none;
 }
 
-#home-right div{
+#home-right .contact-group{
     color: #5c6689;
     font-size: 25px;
     display: flex;

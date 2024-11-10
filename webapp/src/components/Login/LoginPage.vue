@@ -9,10 +9,10 @@
             <div id="div-login-form">
                 <h1> Welcome Back!</h1>
                 <div id="div-uname">
-                    <input id="uname" type="text" placeholder="Username" value="root">
+                    <input id="uname" type="text" v-model="username" placeholder="Username" required>
                 </div>
                 <div id="div-pwd">
-                    <input id="pwd" type="text" placeholder="Password" value="supersecretpasswordhash">
+                    <input id="pwd" type="text" v-model="password" placeholder="Password" required>
                 </div>
                 <div id="div-forgot">
                     <a href="#">Forgot passsword</a>
@@ -25,30 +25,52 @@
     </div>
 </template>
 
-<script setup>
+<script >
 import router from '@/router';
+import { ref } from 'vue';
+export default{
+        name: 'LoginUser',
+        setup(){
+            // alert('LoginUser component loaded');
+            console.log('LoginUser component loaded');
+            // data
+            const username = ref('root');
+            const password = ref('supersecretpasswordhash');
+            // methods
+            const login = () => {
+                fetch(import.meta.env.VITE_API_URL + "/login", {
+                    // Send the username and password to the server
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `username=${uname.value}&password=${pwd.value}`,
+                    credentials: "include"
+                }).then((res) => {
+                    if(!res.ok){
+                        // If the response is not ok, throw an error
+                        throw new Error(`Http error! Status: ${res.status}`);
+                    }
+                    // Return the response as JSON
+                    return res.json();
 
-function login() {
-    fetch(import.meta.env.VITE_API_URL + "/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `username=${uname.value}&password=${pwd.value}`,
-        credentials: "include"
-    }).then((res) => {
-        if(!res.ok){
-            throw new Error(`Http error! Status: ${res.status}`);
+                }).then((data) => {
+                    if(data.StatusCode==200){
+                        console.log(data)
+                        // Save the username in the local storage
+                        localStorage.setItem('username', username.value);
+                        // Redirect to the home page
+                        alert("Login successful");
+                        router.push('/home');
+                    }
+                    // If the response is not ok, throw an error
+                }).catch((error) => console.error("Unable to tetch data:",error));
+            }
+            // computed
+            return { username, password, login }
+            
         }
-        return res.json();
-
-    }).then((data) => {
-        if(data.StatusCode==200){
-            console.log(data)
-            router.push('/home');
-        }
-    }).catch((error) => console.error("Unable to tetch data:",error));
-}
+    }
 </script>
 
 <style scoped>

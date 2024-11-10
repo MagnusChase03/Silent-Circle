@@ -1,7 +1,16 @@
-<script setup>
+<script>
     import NavBar from '../NavBar.vue';
     import HomeContent from './HomeContent.vue';
     import SCLogo from '../SCLogo.vue';
+
+    export default {
+        name: 'MyHome',
+        components: {
+            NavBar,
+            SCLogo,
+            HomeContent
+        }
+    }
 </script>
 
 <template>
