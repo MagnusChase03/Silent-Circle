@@ -23,10 +23,14 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Listen for friend request](#userfriendlisten)
 
 **Group**
+- [Update Group](#groupupdate)
+- [Create Group](#groupcreate)
+- [Delete Group](#groupdelete)
 - [Group Invite](#groupinvite)
 - [Group Accept](#groupinviteaccept)
 - [Group Reject](#groupinvitereject)
 - [Listen for group invites](#groupinvitelisten)
+- [Listen for group chat](#groupchat)
 
 **Misc.**
 
@@ -447,6 +451,94 @@ $ sudo podman stop cs4389-api
 }
 ```
 
+### /group/create
+
+*Route to create a new group.*
+
+**Method**: `POST`
+
+**Body**: `creatorID`, `groupname`
+
+**Example**: `https://api.application.com/group/create`
+
+**Returns**: `200`, `400`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+### /group/delete
+
+*Route to create a delete a group.*
+
+**Method**: `POST`
+
+**Body**: `groupame`
+
+**Example**: `https://api.application.com/group/delete`
+
+**Returns**: `200`, `401`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/update
+
+*Route to updates a group.*
+
+**Method**: `POST`
+
+**Body**: `userID`, `groupname`, `groupID`
+
+**Example**: `https://api.application.com/group/update`
+
+**Returns**: `200`, `401`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
 ### /group/invite
 
 *Route to send a group invite to a user.*
@@ -563,5 +655,31 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "Message": "1-FunnyGroup"
+}
+```
+
+### /group/chat
+
+*Websocket to handle real time chat.*
+
+**Method**: `N/A`
+
+**Body**: `N/A`
+
+**Example**: `wss://api.application.com/group/chat?group=1`
+
+**Returns**: `N/A`
+
+`Read`
+```JSON
+{
+    "Message": "root-<Encrypted Message>"
+}
+```
+
+`Write`
+```JSON
+{
+    "Message": "<Encrypted Message>"
 }
 ```
