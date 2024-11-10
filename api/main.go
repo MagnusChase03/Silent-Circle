@@ -125,6 +125,7 @@ func main() {
 
 	mux.Handle("/group/create", middleware.HandleWithMiddleware(
 		http.HandlerFunc(groupRoutes.CreateGroupHandler),
+		middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 		middleware.LogMiddleware,
 	))
@@ -142,6 +143,35 @@ func main() {
 		middleware.CorsMiddleware,
 		middleware.LogMiddleware,
 	))
+
+	mux.Handle("/group/invite", middleware.HandleWithMiddleware(
+		http.HandlerFunc(groupRoutes.GroupInviteHandler),
+		middleware.AuthMiddleware,
+		middleware.CorsMiddleware,
+		middleware.LogMiddleware,
+	))
+
+	mux.Handle("/group/invite/accept", middleware.HandleWithMiddleware(
+		http.HandlerFunc(groupRoutes.AcceptGroupInviteHandler),
+		middleware.AuthMiddleware,
+		middleware.CorsMiddleware,
+		middleware.LogMiddleware,
+	))
+
+	mux.Handle("/group/invite/reject", middleware.HandleWithMiddleware(
+		http.HandlerFunc(groupRoutes.RejectGroupInviteHandler),
+		middleware.AuthMiddleware,
+		middleware.CorsMiddleware,
+		middleware.LogMiddleware,
+	))
+
+	mux.Handle("/group/invite/listen", middleware.HandleWithMiddleware(
+		http.HandlerFunc(groupRoutes.GroupInviteListenerHandler),
+		middleware.AuthMiddleware,
+		middleware.CorsMiddleware,
+		middleware.LogMiddleware,
+	))
+
 	// Start HTTPS server on port 8080
 	fmt.Printf("[LOG] Starting API server on 0.0.0.0:8080.\n")
 	if err := http.ListenAndServeTLS("0.0.0.0:8080", "/certs/server.crt", "/certs/server.key", mux); err != nil {

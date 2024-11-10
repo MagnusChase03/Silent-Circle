@@ -22,6 +22,12 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Get friend](#userfriendget)
 - [Listen for friend request](#userfriendlisten)
 
+**Group**
+- [Group Invite](#groupinvite)
+- [Group Accept](#groupinviteaccept)
+- [Group Reject](#groupinvitereject)
+- [Listen for group invites](#groupinvitelisten)
+
 **Misc.**
 
 - [Healthcheck](#healthcheck)
@@ -179,9 +185,7 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "StatusCode": 200,
-    "Data": {
-        "PublicKey": "supersecretpublickey"
-    }
+    "Data": "Ok"
 }
 ```
 
@@ -440,5 +444,124 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "Message": "root"
+}
+```
+
+### /group/invite
+
+*Route to send a group invite to a user.*
+
+**Method**: `POST`
+
+**Body**: `username`, `key`, `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/accept
+
+*Route to accept a given group invite.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite/accept`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": {
+        "EncryptedKey": "supersecretkey"
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/reject
+
+*Route to reject a given group invite.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite/accept`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/listen
+
+*Websocket to listen for when group invite requests occur for the user.*
+
+**Method**: `N/A`
+
+**Body**: `N/A`
+
+**Example**: `wss://api.application.com/group/invite/listen`
+
+**Returns**: `N/A`
+
+```JSON
+{
+    "Message": "1-FunnyGroup"
 }
 ```

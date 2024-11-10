@@ -1,6 +1,6 @@
 /* =========================================================================
-*  File Name: controller/groupController/createGroup.go
-*  Description: Controller for creating a group.
+*  File Name: controller/groupControllers/rejectGroup.go
+*  Description: Controller for rejecting a friend request.
 *  Author: MagnusChase03
 *  =======================================================================*/
 package groupControllers
@@ -13,24 +13,24 @@ import (
 )
 
 /*
-*  Attempts to create a new group with given attributes.
+*  Attempts to reject an invite request.
 *
 *  Arguments:
-*      - creatorID (int): The ID of the creator of the group.
-*      - groupName (string): The name of the group
+*      - userID (int): The userID of the sending user.
+*      - groupID (int): The groupID of the group.
 *
 *  Returns:
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
  */
-func CreateGroupController(creatorID int, groupname string) (utils.JSONResponse, error) {
-	err := models.CreateGroup(creatorID, groupname)
+func RejectGroupInviteController(userID int, groupID int) (utils.JSONResponse, error) {
+	err := models.RejectGroupInvite(userID, groupID)
 	if err != nil {
 		return utils.JSONResponse{
-			StatusCode: 401,
-			Data:       "Failed to create group.",
-		}, fmt.Errorf("[ERROR] Failed to create group. %w", err)
+			StatusCode: 400,
+			Data:       "Failed to reject invite request.",
+		}, fmt.Errorf("[ERROR] Failed to reject invite request. %w", err)
 	}
 
 	return utils.JSONResponse{

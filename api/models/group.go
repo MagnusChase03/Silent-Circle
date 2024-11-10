@@ -1,12 +1,13 @@
 /* =========================================================================
 *  File Name: models/group.go
 *  Description: Handles database interactions related to groups.
-*  Author: Matthew-Basinger
+*  Author: Zachary, Matthew-Basinger
 *  =======================================================================*/
 package models
 
 import (
 	"fmt"
+
 	"github.com/MagnusChase03/CS4389-Project/db"
 )
 
@@ -145,7 +146,7 @@ func GetCreatorIDByGroupName(groupname string) (int, error) {
 		&group.GroupName,
 	)
 	if err != nil {
-		return 0, fmt.Errorf("[ERROR] Failed to find group with GroupID %d. %w", groupname, err)
+		return 0, fmt.Errorf("[ERROR] Failed to find group. %w", err)
 	}
 
 	return group.CreatorID, nil
@@ -170,7 +171,7 @@ func UpdateGroup(userID int, groupname string, groupID int) error {
 	}
 	if groupname == "" {
 		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
-	} else { //
+	} else {
 		updateStatement, err := instance.Connection.Prepare(
 			"UPDATE Groups SET GroupName=?, WHERE GroupID=?",
 		)
@@ -183,6 +184,179 @@ func UpdateGroup(userID int, groupname string, groupID int) error {
 		if err != nil {
 			return fmt.Errorf("[ERROR] Failed to update user. %w", err)
 		}
+	}
+
+	return nil
+}
+
+/*
+*  Invites a given user to the given group.
+*
+*  Arguments:
+*      - userID (int): The userID sending the invite.
+*      - username (string): The new groupname for the group.
+*      - encryptedKey (string): The encrypted group session key.
+*      - groupID (int): The groupID of the group.
+*
+*  Returns:
+*      - error: An error if any occurred.
+*
+ */
+func SendGroupInvite(userID int, username string, encryptedKey string, groupID int) error {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	// Ensure user is owner of group
+	query, err := instance.Connection.Prepare(
+		"SELECT Users.UserID FROM Users JOIN Groups ON Users.UserID = Groups.CreatorID WHERE Groups.GroupID = ?",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var creatorID int
+	err = query.QueryRow(groupID).Scan(&creatorID)
+	if err != nil {
+		return fmt.Errorf(
+			"[ERROR] Could not find group. %w",
+			err,
+		)
+	}
+
+	// Get invitee ID
+	query, err = instance.Connection.Prepare(
+		"SELECT UserID FROM Users WHERE Username = ?",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var user2ID int
+	err = query.QueryRow(username).Scan(&user2ID)
+	if err != nil {
+		return fmt.Errorf(
+			"[ERROR] Could not find user. %w",
+			err,
+		)
+	}
+
+	// Inserting request
+	insertStatement, err := instance.Connection.Prepare(
+		"INSERT INTO GroupInvites(UserID, GroupID, EncryptedKey) VALUES (?, ?, ?)",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer insertStatement.Close()
+
+	_, err = insertStatement.Exec(user2ID, groupID, encryptedKey)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to create group. %w", err)
+	}
+
+	return nil
+}
+
+/*
+*  Accepts the given group invite.
+*
+*  Arguments:
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*
+*  Returns:
+*      - string: The encrypted key from the invite.
+*      - error: An error if any occurred.
+*
+ */
+func AcceptGroupInvite(userID int, groupID int) (string, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	// Ensure invite exist
+	query, err := instance.Connection.Prepare(
+		"SELECT EncryptedKey FROM GroupInvites WHERE UserID = ? AND GroupID = ?",
+	)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var encryptedKey string
+	err = query.QueryRow(userID, groupID).Scan(&encryptedKey)
+	if err != nil {
+		return "", fmt.Errorf(
+			"[ERROR] Could not find invite. %w",
+			err,
+		)
+	}
+
+	// Delete invite
+	deleteStatement, err := instance.Connection.Prepare(
+		"DELETE FROM GroupInvites WHERE UserID = ? AND GroupID = ?",
+	)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
+
+	_, err = deleteStatement.Exec(userID, groupID)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to delete invite. %w", err)
+	}
+
+	// Add to group
+	insertStatement, err := instance.Connection.Prepare(
+		"INSERT INTO UserGroup(UserID, GroupID) VALUES (?, ?)",
+	)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer insertStatement.Close()
+
+	_, err = insertStatement.Exec(userID, groupID)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to insert user in group. %w", err)
+	}
+
+	return encryptedKey, nil
+}
+
+/*
+*  Rejects the given group invite.
+*
+*  Arguments:
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*
+*  Returns:
+*      - error: An error if any occurred.
+*
+ */
+func RejectGroupInvite(userID int, groupID int) error {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	// Delete invite
+	deleteStatement, err := instance.Connection.Prepare(
+		"DELETE FROM GroupInvites WHERE UserID = ? AND GroupID = ?",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
+
+	_, err = deleteStatement.Exec(userID, groupID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to delete invite. %w", err)
 	}
 
 	return nil
