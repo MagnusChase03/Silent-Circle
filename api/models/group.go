@@ -311,6 +311,20 @@ func AcceptGroupInvite(userID int, groupID int) (string, error) {
 		return "", fmt.Errorf("[ERROR] Failed to delete invite. %w", err)
 	}
 
+	// Add to group
+	insertStatement, err := instance.Connection.Prepare(
+		"INSERT INTO UserGroup(UserID, GroupID) VALUES (?, ?)",
+	)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer insertStatement.Close()
+
+	_, err = insertStatement.Exec(userID, groupID)
+	if err != nil {
+		return "", fmt.Errorf("[ERROR] Failed to insert user in group. %w", err)
+	}
+
 	return encryptedKey, nil
 }
 
