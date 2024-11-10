@@ -179,9 +179,7 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "StatusCode": 200,
-    "Data": {
-        "PublicKey": "supersecretpublickey"
-    }
+    "Data": "Ok"
 }
 ```
 
