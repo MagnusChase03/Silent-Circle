@@ -12,30 +12,17 @@
           <div class="right-side">
             <div class="chat-bubble">
               <div class="group-name-box">
-                <input
-                  type="text"
-                  v-model="groupName"
-                  placeholder="Enter Group Name"
-                  class="group-name-input"
-                  @keyup.enter="createGroup"
-                />
+                <input type="text" v-model="groupName" placeholder="Enter Group Name" class="group-name-input"
+                  @keyup.enter="createGroup" />
               </div>
-              <br />
+              <br/>
               <!-- Create group button -->
-              <button
-                class="create-group-button"
-                @click="createGroup"
-                :disabled="!groupName.trim()"
-              >
+              <button class="create-group-button" @click="createGroup" :disabled="!groupName.trim()" >
                 Create Group
               </button>
             </div>
           </div>
-          <img
-            src="@/assets/img/create-grp-photo.gif"
-            alt="Animated GIF"
-            class="animated-gif"
-          />
+          <img src="@/assets/img/create-grp-photo.gif" alt="Animated GIF" class="animated-gif"/>
         </div>
       </div>
     </div>
