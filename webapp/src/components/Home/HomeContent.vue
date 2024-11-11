@@ -1,42 +1,99 @@
 <template>
     <div id="home-right">
-        <ul>
-           <li>
-                <div id="contact-friend">
-                    <button><img src="/src/assets/img/user-blue-ico.png" alt="friend"/></button>
-                    <h7>Friend 1</h7>
-                </div>
-           </li> 
-           <li>
-                <div id="contact-group">
-                    <button><img src="/src/assets/img/team-ico.png" alt="group 1"/></button>
-                    <h7>Group 1</h7>
-                </div>
-           </li>
-           <li>
-                <div id="contact-group">
-                    <button><img src="/src/assets/img/groups-ico.png" alt="group 2"/></button>
-                    <h7>Group 2</h7>
-                </div>
-           </li>
-           <li>
-                <div id="contact-group">
-                    <button><img src="/src/assets/img/team-ico.png" alt="group 3"/></button>
-                    <h7>Group</h7>
-                </div>
-            </li>
-           <li>
-                <div id="contact-friend">
-                    <button><img src="/src/assets/img/user-blue-ico.png" alt="friend 2"/></button>
-                    <h7>Friend 2</h7>
-                </div>    
-            </li>
-        </ul>
+        <div id="lst-groups">
+            <ul>
+                <li v-for="group in groups" :key="group.groupId" class="home-group">
+                    <router-link :to="{name: 'group-chat', params: {gid: group.groupId, gname: group.groupName }}">
+                        <div class="contact-group">
+                            <button><img src="/src/assets/img/team-ico.png" alt=""/></button>
+                            <h7>{{ group.groupName }}</h7>
+                                </div>
+                    </router-link>
+                </li>
+            </ul>
+        </div>  
     </div>
 </template>
 
-<script setup>
+<script>
+import { ref } from 'vue';
+
+export default {
+    name: 'HomeContent',
+    setup() {
+        //const groups = ref([]);
+        const groups = ref([
+            {
+                "groupId": "101",
+                "groupName": "CS4389"
+            },
+            {
+                "groupId": "102",
+                "groupName": "Work"
+            },
+            {
+                "groupId": "103",
+                "groupName": "Family"
+            },
+            {
+                "groupId": "104",
+                "groupName": "Sports"
+            },
+            {
+                "groupId": "105",
+                "groupName": "Book Club"
+            },
+            {
+                "groupId": "106",
+                "groupName": "CS4389"
+            },
+            {
+                "groupId": "107",
+                "groupName": "Work"
+            },
+            {
+                "groupId": "108",
+                "groupName": "Family"
+            },
+            {
+                "groupId": "109",
+                "groupName": "Sports"
+            },
+            {
+                "groupId": "1010",
+                "groupName": "Book Club"
+            }
+        ]);
+
+        return { groups }
+    }
+}
 </script>
 
 <style scoped>
+    #home-right {
+        width: 100%;
+        height: 100%;
+    }
+    #home-right div#lst-groups {
+        height: 100%;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        width: 100%;
+        display: block;
+        padding: 0;
+        margin: 0;
+    }
+
+    .home-group a{
+        text-decoration: none;
+    }
+
+    .home-group a:hover{
+        cursor: pointer;
+    }
+
+    .home-group button:hover{
+        cursor: pointer;
+    }
 </style>
