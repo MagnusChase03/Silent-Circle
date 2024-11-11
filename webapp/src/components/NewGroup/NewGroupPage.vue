@@ -1,10 +1,11 @@
-<script setup>
+<!--<script setup>
     import MyNav from '../NavBar.vue';
-</script>
+</script> -->
 <template>
-   <div class="page-container">
+   <div class="wrapper-home">
      <!-- Nav Bar -->
-    <MyNav></MyNav>
+    <NavBar></NavBar>
+    <!-- Insert your content or any component here -->
 
     <div class="page-background">    
       <div class="header">
@@ -21,6 +22,7 @@
         @keyup.enter="createGroup"
       />
     </div>
+  </div>
       <br>
     <!-- Create group button -->
     <button class="create-group-button" @click="createGroup" :disabled="!groupName.trim()">
@@ -33,12 +35,22 @@
        alt="Animated GIF" 
        class="animated-gif" 
   />
+  <div style="width: 100%; height: 100%;">
     </div>
+    <SCLogo></SCLogo>
    </div>
 </template>
 
 <script>
+    import NavBar from '../NavBar.vue';
+    import SCLogo from '../SCLogo.vue';
+
 export default {
+  name: 'NewGroupPage',
+        components: {
+            NavBar,
+            SCLogo
+        },
     data() {
         return {
             groupName: ''
@@ -158,4 +170,29 @@ export default {
   height: auto; 
   
 }
-</style>
+/* <template>
+    <div id="wrapper-home">
+        <NavBar></NavBar>
+        <!-- Insert your content or any component here -->
+        <div style="width: 100%; height: 100%;">
+            <h1>This Is New Group Page Again after fix</h1>
+        </div>
+        <!-- End of main content -->
+
+        <SCLogo></SCLogo>
+    </div>
+</template>
+<script>
+    import NavBar from '../NavBar.vue';
+    import SCLogo from '../SCLogo.vue';
+
+    export default {
+        name: 'NewGroupPage',
+        components: {
+            NavBar,
+            SCLogo
+        }
+    }
+</script>
+<style>
+</style>*/

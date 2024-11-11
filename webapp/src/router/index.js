@@ -5,6 +5,7 @@ import WelcomePage from '../components/Welcome/WelcomePage.vue'
 import CreateUserPage from '../components/CreateUser/CreateUserPage.vue'
 import NewGroupPage from '../components/NewGroup/NewGroupPage.vue'
 import AddMemberPage from '../components/AddMember/AddMemberPage.vue'
+import GroupChatPage from '../components/GroupChat/GroupChatPage.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -27,11 +28,17 @@ const router = createRouter({
         },
         {
             path: '/new-group',
-            component: NewGroupPage    
+            component: NewGroupPage
         },
         {
             path: '/add-member',
-            component: AddMemberPage    
+            component: AddMemberPage
+        },
+        {
+            path: '/group-chat/:gid/:gname',
+            name: 'group-chat',
+            component: GroupChatPage,
+            props: true
         }
     ]
 })
