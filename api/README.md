@@ -513,7 +513,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**: `userID`, `groupname`, `groupID`
+**Body**:  `groupname`, `groupID`
 
 **Example**: `https://api.application.com/group/update`
 
@@ -535,6 +535,31 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 401,
     "Data": "Unauthorized"
+}
+```
+
+### /group/get
+
+*Route to  retrieve all groups a user is in.*
+
+**Method**: `GET`
+
+**Body**: 
+
+**Example**: `https://api.application.com/group/get`
+
+**Returns**: `200`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
 }
 ```
 

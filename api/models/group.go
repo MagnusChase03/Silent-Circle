@@ -441,3 +441,72 @@ func RejectGroupInvite(userID int, groupID int) error {
 
 	return nil
 }
+
+
+func GetGroups(userID int) ([]string, []int, error) {
+    var groupNames []string;
+	var groupIDs []int;
+    instance, err := db.GetMariaDB();
+    if err != nil {
+        return nil, nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+    }
+
+    query, err := instance.Connection.Prepare("SELECT * FROM UserGroup WHERE UserID = ?")
+    if err != nil {
+        return nil, nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
+    }
+    defer query.Close();
+	fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", query);
+
+	rows, err := query.Query(userID)
+	var groupName string
+	var groupID int
+	for rows.Next() {
+		err = rows.Scan(
+			&groupName,
+			&groupID,
+		)
+		groupName, err = GetGroupNameByGroupID(groupID)
+		if(err != nil){
+			return nil, nil, fmt.Errorf("[ERROR] Failed to find groups %d. %w", groupID, err);
+		}
+		groupNames = append(groupNames, groupName)
+		groupIDs = append(groupIDs, groupID)
+	}
+    return groupNames, groupIDs, nil;	
+}
+
+/*
+*  Determines the groupName of a group in the database with given groupID.
+*
+*  Arguments:
+*      - groupID (int): The ID of the group.
+*  
+*  Returns:
+*      - error: An error if any occurred.
+*
+*/
+func GetGroupNameByGroupID(groupID int) (string, error) {
+    var group Group;
+    instance, err := db.GetMariaDB();
+    if err != nil {
+        return "", fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+    }
+
+    query, err := instance.Connection.Prepare("SELECT * FROM Groups WHERE GroupID = ?")
+    if err != nil {
+        return "", fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
+    }
+    defer query.Close();
+
+    err = query.QueryRow(groupID).Scan(
+        &group.GroupID, 
+        &group.CreatorID, 
+        &group.GroupName, 
+    );
+    if err != nil {
+        return "", fmt.Errorf("[ERROR] Failed to find group with GroupID %d. %w", groupID, err);
+    }
+
+    return group.GroupName, nil;
+}
