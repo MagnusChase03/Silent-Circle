@@ -101,7 +101,6 @@
         padding: 0;
         margin: 0;
     }
-
     .home-group{
         justify-content: space-between;
     }
