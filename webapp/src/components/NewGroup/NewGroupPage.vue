@@ -2,7 +2,6 @@
   <div id="wrapper-home">
     <!-- NavBar Component -->
     <NavBar></NavBar>
-
     <div style="width: 100%; height: 100%;">
       <!-- New Group Page Content -->
       <div class="page-container">
