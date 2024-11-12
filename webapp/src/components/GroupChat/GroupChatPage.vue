@@ -4,11 +4,6 @@
     <div class="page-background">
       <!-- Header with Menu Icon and Group Title -->
       <div class="header">
-        <img
-          src="@/assets/img/menu-btn-welcome.png"
-          alt="Menu"
-          class="menu-icon"
-        />
         <h1 class="group-title">CS 4389 Group</h1>
       </div>
 
@@ -102,10 +97,6 @@ export default {
   position: relative;
 }
 
-.menu-icon {
-  width: 30px;
-  cursor: pointer;
-}
 
 .group-title {
   font-family: cursive;
