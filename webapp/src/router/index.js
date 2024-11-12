@@ -6,6 +6,7 @@ import CreateUserPage from '../components/CreateUser/CreateUserPage.vue'
 import NewGroupPage from '../components/NewGroup/NewGroupPage.vue'
 import AddMemberPage from '../components/AddMember/AddMemberPage.vue'
 import GroupChatPage from '../components/GroupChat/GroupChatPage.vue'
+import DeleteUserPage from '../components/DeleteUserPage/DeleteUserPage.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -39,6 +40,11 @@ const router = createRouter({
             name: 'group-chat',
             component: GroupChatPage,
             props: true
+        },
+        {
+            path:'/delete-user',
+            name:'/delete-user',
+            component: DeleteUserPage,
         }
     ]
 })
