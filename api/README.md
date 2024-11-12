@@ -545,7 +545,7 @@ $ sudo podman stop cs4389-api
 
 *Route to  retrieve all groups a user is in.*
 
-**Method**: `GET`
+**Method**: `POST`
 
 **Body**: `N/A`
 
