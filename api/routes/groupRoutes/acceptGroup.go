@@ -1,22 +1,23 @@
 /* =========================================================================
-*  File Name: routes/userRoutes/deleteUser.go
-*  Description: Handler for deleting users.
+*  File Name: routes/groupRoutes/acceptGroup.go
+*  Description: Handler for accepting a group invite request.
 *  Author: MagnusChase03
 *  =======================================================================*/
-package userRoutes
+package groupRoutes
 
 import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
-	"github.com/MagnusChase03/CS4389-Project/controllers/userControllers"
+	"github.com/MagnusChase03/CS4389-Project/controllers/groupControllers"
 	"github.com/MagnusChase03/CS4389-Project/session"
 	"github.com/MagnusChase03/CS4389-Project/utils"
 )
 
 /*
-*  Handles the control flow for the create user route.
+*  Handles the control flow for accepting an invite request.
 *
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
@@ -25,8 +26,29 @@ import (
 *  Returns:
 *      - N/A
  */
-func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+func AcceptGroupInviteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
+		utils.SendBadRequest(w)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Printf("[ERROR] Failed to parse form.\n")
+		utils.SendBadRequest(w)
+		return
+	}
+
+	groupIDStr := r.FormValue("group")
+	if groupIDStr == "" {
+		fmt.Printf("[ERROR] Group is empty.\n")
+		utils.SendBadRequest(w)
+		return
+	}
+
+	groupID, err := strconv.ParseInt(groupIDStr, 10, 64)
+	if groupIDStr == "" {
+		fmt.Printf("[ERROR] Group is invalid.\n")
 		utils.SendBadRequest(w)
 		return
 	}
@@ -43,11 +65,10 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := userControllers.DeleteUserController(userID)
+	resp, err := groupControllers.AcceptGroupInviteController(userID, int(groupID))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err)
 	}
-	session.DeleteUserCookie(w)
 
 	if err := utils.SendResponse(w, resp); err != nil {
 		utils.SendInternalServerError(w, err)

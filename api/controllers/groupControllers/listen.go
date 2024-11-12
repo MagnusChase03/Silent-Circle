@@ -1,9 +1,9 @@
 /* =========================================================================
-*  File Name: controller/friendControllers/listen.go
-*  Description: Controller for sending friend requests to websocket from redis pub/sub
+*  File Name: controller/groupControllers/listen.go
+*  Description: Controller for sending group invite requests to websocket from redis pub/sub
 *  Author: MagnusChase03
 *  =======================================================================*/
-package friendControllers
+package groupControllers
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 )
 
 /*
-*  Sends data from redis pub/sub to websocket about user friend requests.
+*  Sends data from redis pub/sub to websocket about user group invite requests.
 *
 *  Arguments:
 *      - client (*websocket.Conn): The userID of the sending user.
@@ -23,13 +23,13 @@ import (
 *      - error: An error if any occurred.
 *
  */
-func FriendRequestListenerController(client *websocket.Conn, userID int) error {
+func GroupInviteListenerController(client *websocket.Conn, userID int) error {
 	db, err := db.GetRedisDB()
 	if err != nil {
 		return fmt.Errorf("[ERROR] Failed to get redis db. %w", err)
 	}
 
-	subscriber := db.Connection.Subscribe(db.Ctx, fmt.Sprintf("fr-%d", userID))
+	subscriber := db.Connection.Subscribe(db.Ctx, fmt.Sprintf("gr-%d", userID))
 	defer subscriber.Close()
 
 	for {

@@ -1,9 +1,9 @@
 /* =========================================================================
-*  File Name: controller/userController/getUser.go
-*  Description: Controller for getting user public key.
-*  Author: MagnusChase03
+*  File Name: controller/groupController/membersGroup.go
+*  Description: Controller for listing all members in a group.
+*  Author: Matthew-Basinger
 *  =======================================================================*/
-package userControllers
+package groupControllers
 
 import (
 	"fmt"
@@ -13,30 +13,29 @@ import (
 )
 
 /*
-*  Attempts to get the users public key.
+*  Attempts to retrieve all members in a group
 *
 *  Arguments:
-*      - username (string): The username of the user.
+*      - groupID (int): The ID of the group.
 *
 *  Returns:
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
- */
-func GetUserController(username string) (utils.JSONResponse, error) {
-	user, err := models.GetUserByUsername(username)
+*/
+func MembersGroupController(groupID int) (utils.JSONResponse, error) {
+	membersNameList, err := models.GetMembers(groupID)
 	if err != nil {
 		return utils.JSONResponse{
 			StatusCode: 400,
-			Data:       "Failed to get user.",
-		}, fmt.Errorf("[ERROR] Failed to get user. %w", err)
+			Data:       "Failed to retrieve group members.",
+		}, fmt.Errorf("[ERROR] Failed to retrieve group. %w", err)
 	}
 
 	var responseStruct struct {
-		PublicKey string
+		MemberNames []string
 	}
-	responseStruct.PublicKey = user.PublicKey
-
+	responseStruct.MemberNames = membersNameList
 	return utils.JSONResponse{
 		StatusCode: 200,
 		Data:       responseStruct,

@@ -6,10 +6,10 @@
 package routes
 
 import (
-    "net/http"
+	"net/http"
 
-    "github.com/MagnusChase03/CS4389-Project/utils"
-    "github.com/MagnusChase03/CS4389-Project/controllers"
+	"github.com/MagnusChase03/CS4389-Project/controllers"
+	"github.com/MagnusChase03/CS4389-Project/utils"
 )
 
 /*
@@ -18,14 +18,14 @@ import (
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
 *      - r (*http.Request): The request being made from the client.
-* 
+*
 *  Returns:
 *      - N/A
-*/
-func HealthcheckHandler(w http.ResponseWriter, r *http.Request) { 
-    resp := controllers.HealthcheckController();
+ */
+func HealthcheckHandler(w http.ResponseWriter, r *http.Request) {
+	resp := controllers.HealthcheckController()
 
-    if err := utils.SendResponse(w, resp); err != nil {
-        utils.SendInternalServerError(w, err);
-    }
+	if err := utils.SendResponse(w, resp); err != nil {
+		utils.SendInternalServerError(w, err)
+	}
 }

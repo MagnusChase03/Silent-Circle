@@ -6,7 +6,7 @@
 package controllers
 
 import (
-    "github.com/MagnusChase03/CS4389-Project/utils"
+	"github.com/MagnusChase03/CS4389-Project/utils"
 )
 
 /*
@@ -14,13 +14,13 @@ import (
 *
 *  Arguments:
 *      - N/A
-* 
+*
 *  Returns:
 *      - utils.JSONResponse: The response to be made to the client.
-*/
-func HealthcheckController() utils.JSONResponse { 
-    return utils.JSONResponse{
-        StatusCode: 200,
-        Data: "Ok",
-    };
+ */
+func HealthcheckController() utils.JSONResponse {
+	return utils.JSONResponse{
+		StatusCode: 200,
+		Data:       "Ok",
+	}
 }

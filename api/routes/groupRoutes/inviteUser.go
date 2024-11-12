@@ -1,22 +1,23 @@
 /* =========================================================================
-*  File Name: routes/friendRoutes/rejectUser.go
-*  Description: Handler for rejecting a friend request to a user.
+*  File Name: routes/groupRoutes/inviteUser.go
+*  Description: Handler for sending a group invite to a user.
 *  Author: MagnusChase03
 *  =======================================================================*/
-package friendRoutes
+package groupRoutes
 
 import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
-	"github.com/MagnusChase03/CS4389-Project/controllers/friendControllers"
+	"github.com/MagnusChase03/CS4389-Project/controllers/groupControllers"
 	"github.com/MagnusChase03/CS4389-Project/session"
 	"github.com/MagnusChase03/CS4389-Project/utils"
 )
 
 /*
-*  Handles the control flow for rejecting a friend request.
+*  Handles the control flow for inviting a user to a group.
 *
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
@@ -25,7 +26,7 @@ import (
 *  Returns:
 *      - N/A
  */
-func RejectFriendRequestHandler(w http.ResponseWriter, r *http.Request) {
+func GroupInviteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		utils.SendBadRequest(w)
 		return
@@ -39,8 +40,17 @@ func RejectFriendRequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := r.FormValue("username")
-	if username == "" {
-		fmt.Printf("[ERROR] username is empty.\n")
+	encryptedKey := r.FormValue("key")
+	groupIDStr := r.FormValue("group")
+	if username == "" || encryptedKey == "" || groupIDStr == "" {
+		fmt.Printf("[ERROR] Username, key, or group is empty.\n")
+		utils.SendBadRequest(w)
+		return
+	}
+
+	groupID, err := strconv.ParseInt(groupIDStr, 10, 64)
+	if err != nil {
+		fmt.Printf("[ERROR] Invalid group.\n")
 		utils.SendBadRequest(w)
 		return
 	}
@@ -57,7 +67,7 @@ func RejectFriendRequestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := friendControllers.RejectFriendRequestController(userID, username)
+	resp, err := groupControllers.GroupInviteController(userID, username, encryptedKey, int(groupID))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err)
 	}

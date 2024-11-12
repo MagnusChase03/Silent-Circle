@@ -22,6 +22,16 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Get friend](#userfriendget)
 - [Listen for friend request](#userfriendlisten)
 
+**Group**
+- [Update Group](#groupupdate)
+- [Create Group](#groupcreate)
+- [Delete Group](#groupdelete)
+- [Group Invite](#groupinvite)
+- [Group Accept](#groupinviteaccept)
+- [Group Reject](#groupinvitereject)
+- [Listen for group invites](#groupinvitelisten)
+- [Listen for group chat](#groupchat)
+
 **Misc.**
 
 - [Healthcheck](#healthcheck)
@@ -179,9 +189,7 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "StatusCode": 200,
-    "Data": {
-        "PublicKey": "supersecretpublickey"
-    }
+    "Data": "Ok"
 }
 ```
 
@@ -427,7 +435,7 @@ $ sudo podman stop cs4389-api
 
 ### /user/friend/listen
 
-*Route to get a list friend from a user.*
+*Websocket to listen for when friend requests occur for the user.*
 
 **Method**: `N/A`
 
@@ -436,3 +444,292 @@ $ sudo podman stop cs4389-api
 **Example**: `wss://api.application.com/user/friend/listen`
 
 **Returns**: `N/A`
+
+```JSON
+{
+    "Message": "root"
+}
+```
+
+### /group/create
+
+*Route to create a new group.*
+
+**Method**: `POST`
+
+**Body**: `creatorID`, `groupname`
+
+**Example**: `https://api.application.com/group/create`
+
+**Returns**: `200`, `400`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+### /group/delete
+
+*Route to create a delete a group.*
+
+**Method**: `POST`
+
+**Body**: `groupame`
+
+**Example**: `https://api.application.com/group/delete`
+
+**Returns**: `200`, `401`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/update
+
+*Route to updates a group.*
+
+**Method**: `POST`
+
+**Body**:  `groupname`, `groupID`
+
+**Example**: `https://api.application.com/group/update`
+
+**Returns**: `200`, `401`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/get
+
+*Route to  retrieve all groups a user is in.*
+
+**Method**: `GET`
+
+**Body**: 
+
+**Example**: `https://api.application.com/group/get`
+
+**Returns**: `200`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+### /group/members
+
+*Route to  retrieve users in a group.*
+
+**Method**: `GET`
+
+**Body**: `groupID`
+
+**Example**: `https://api.application.com/group/get`
+
+**Returns**: `200`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+### /group/invite
+
+*Route to send a group invite to a user.*
+
+**Method**: `POST`
+
+**Body**: `username`, `key`, `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/accept
+
+*Route to accept a given group invite.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite/accept`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": {
+        "EncryptedKey": "supersecretkey"
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/reject
+
+*Route to reject a given group invite.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/invite/accept`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/invite/listen
+
+*Websocket to listen for when group invite requests occur for the user.*
+
+**Method**: `N/A`
+
+**Body**: `N/A`
+
+**Example**: `wss://api.application.com/group/invite/listen`
+
+**Returns**: `N/A`
+
+```JSON
+{
+    "Message": "1-FunnyGroup"
+}
+```
+
+### /group/chat
+
+*Websocket to handle real time chat.*
+
+**Method**: `N/A`
+
+**Body**: `N/A`
+
+**Example**: `wss://api.application.com/group/chat?group=1`
+
+**Returns**: `N/A`
+
+`Read`
+```JSON
+{
+    "Message": "root-<Encrypted Message>"
+}
+```
+
+`Write`
+```JSON
+{
+    "Message": "<Encrypted Message>"
+}
+```

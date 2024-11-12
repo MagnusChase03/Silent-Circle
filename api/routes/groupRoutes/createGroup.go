@@ -1,22 +1,22 @@
 /* =========================================================================
-*  File Name: routes/userRoutes/deleteUser.go
-*  Description: Handler for deleting users.
-*  Author: MagnusChase03
+*  File Name: routes/groupRoutes/createGroup.go
+*  Description: Handler for creating groups.
+*  Author: Matthew-Basinger
 *  =======================================================================*/
-package userRoutes
+package groupRoutes
 
 import (
 	"fmt"
 	"net/http"
 	"os"
 
-	"github.com/MagnusChase03/CS4389-Project/controllers/userControllers"
+	"github.com/MagnusChase03/CS4389-Project/controllers/groupControllers"
 	"github.com/MagnusChase03/CS4389-Project/session"
 	"github.com/MagnusChase03/CS4389-Project/utils"
 )
 
 /*
-*  Handles the control flow for the create user route.
+*  Handles the control flow for the creation of group routes.
 *
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
@@ -25,7 +25,7 @@ import (
 *  Returns:
 *      - N/A
  */
-func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+func CreateGroupHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		utils.SendBadRequest(w)
 		return
@@ -43,11 +43,24 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := userControllers.DeleteUserController(userID)
+	err = r.ParseForm()
+	if err != nil {
+		fmt.Printf("[ERROR] Failed to parse form.\n")
+		utils.SendBadRequest(w)
+		return
+	}
+
+	groupname := r.FormValue("groupname")
+	if groupname == "" {
+		fmt.Printf("[ERROR] groupname empty.\n")
+		utils.SendBadRequest(w)
+		return
+	}
+
+	resp, err := groupControllers.CreateGroupController(userID, groupname)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err)
 	}
-	session.DeleteUserCookie(w)
 
 	if err := utils.SendResponse(w, resp); err != nil {
 		utils.SendInternalServerError(w, err)
