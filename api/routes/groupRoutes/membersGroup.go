@@ -58,7 +58,6 @@ func GroupMembersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	resp, err := groupControllers.MembersGroupController(groupID)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err)

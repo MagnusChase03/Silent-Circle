@@ -26,6 +26,8 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Update Group](#groupupdate)
 - [Create Group](#groupcreate)
 - [Delete Group](#groupdelete)
+- [Get Group](#groupget)
+- [Members Group](#groupmembers)
 - [Group Invite](#groupinvite)
 - [Group Accept](#groupinviteaccept)
 - [Group Reject](#groupinvitereject)
@@ -457,7 +459,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**: `creatorID`, `groupname`
+**Body**: `groupname`
 
 **Example**: `https://api.application.com/group/create`
 
@@ -545,7 +547,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `GET`
 
-**Body**: 
+**Body**: `N/A`
 
 **Example**: `https://api.application.com/group/get`
 
@@ -553,7 +555,10 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "StatusCode": 200,
-    "Data": "Ok"
+    "Data": {
+        "GroupNames": ["fungroup,fungroup2"],
+        "GroupIDs": [1,2]
+    }
 }
 ```
 
@@ -561,6 +566,12 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 400,
     "Data": "Bad Request"
+}
+```
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
 }
 ```
 
@@ -568,17 +579,19 @@ $ sudo podman stop cs4389-api
 
 *Route to  retrieve users in a group.*
 
-**Method**: `GET`
+**Method**: `POST`
 
 **Body**: `groupID`
 
-**Example**: `https://api.application.com/group/get`
+**Example**: `https://api.application.com/group/members`
 
 **Returns**: `200`, `400`
 ```JSON
 {
     "StatusCode": 200,
-    "Data": "Ok"
+    "Data": {
+        "MemberNames": ["user1"],
+    }
 }
 ```
 
@@ -586,6 +599,13 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 400,
     "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
 }
 ```
 
@@ -597,7 +617,7 @@ $ sudo podman stop cs4389-api
 
 **Body**: `username`, `key`, `group` (groupID)
 
-**Example**: `https://api.application.com/group/invite`
+**Example**: `https://api.application.com/group/members`
 
 **Returns**: `200`, `400`, `401`
 

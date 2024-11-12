@@ -22,7 +22,7 @@ import (
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
-*/
+ */
 func GetGroupController(creatorID int) (utils.JSONResponse, error) {
 	groupNameList, groupIDList, err := models.GetGroups(creatorID)
 	if err != nil {
@@ -34,7 +34,7 @@ func GetGroupController(creatorID int) (utils.JSONResponse, error) {
 
 	var responseStruct struct {
 		GroupNames []string
-		GroupIDs []int
+		GroupIDs   []int
 	}
 	responseStruct.GroupNames = groupNameList
 	responseStruct.GroupIDs = groupIDList

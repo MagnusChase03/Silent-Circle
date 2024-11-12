@@ -22,7 +22,7 @@ import (
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
-*/
+ */
 func MembersGroupController(groupID int) (utils.JSONResponse, error) {
 	membersNameList, err := models.GetMembers(groupID)
 	if err != nil {
