@@ -10,11 +10,6 @@
           class="menu-icon"
         />
         <h1 class="group-title">CS 4389 Group</h1>
-        <img
-          src="@/assets/img/logo-welcome.png"
-          alt="Silent Circle Logo"
-          class="logo"
-        />
       </div>
 
       <!-- Chat Area -->
@@ -91,9 +86,10 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
   background: radial-gradient(circle at 50% 50%, #279ACD, #808FCD);
   overflow: hidden;
+  height: 100%;
+  width: 100%;
 }
 
 .header {
@@ -119,11 +115,6 @@ export default {
   flex-grow: 1;
 }
 
-.logo {
-  width: 50px;
-  position: absolute;
-  right: 20px;
-}
 
 .chat-area {
   display: flex;
