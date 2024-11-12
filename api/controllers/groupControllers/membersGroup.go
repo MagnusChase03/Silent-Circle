@@ -1,6 +1,6 @@
 /* =========================================================================
-*  File Name: controller/groupController/getGroup.go
-*  Description: Controller for finding all groups a user is a part of.
+*  File Name: controller/groupController/membersGroup.go
+*  Description: Controller for listing all members in a group.
 *  Author: Matthew-Basinger
 *  =======================================================================*/
 package groupControllers
@@ -13,31 +13,29 @@ import (
 )
 
 /*
-*  Attempts to retrieve all groups a user is part of
+*  Attempts to retrieve all members in a group
 *
 *  Arguments:
-*      - creatorID (int): The ID of the creator of the group.
+*      - groupID (int): The ID of the group.
 *
 *  Returns:
 *      - utils.JSONResponse: The response to be made to the client.
 *      - error: An error if any occurred.
 *
 */
-func GetGroupController(creatorID int) (utils.JSONResponse, error) {
-	groupNameList, groupIDList, err := models.GetGroups(creatorID)
+func MembersGroupController(groupID int) (utils.JSONResponse, error) {
+	membersNameList, err := models.GetMembers(groupID)
 	if err != nil {
 		return utils.JSONResponse{
 			StatusCode: 400,
-			Data:       "Failed to retrieve groups.",
+			Data:       "Failed to retrieve group members.",
 		}, fmt.Errorf("[ERROR] Failed to retrieve group. %w", err)
 	}
 
 	var responseStruct struct {
-		GroupNames []string
-		GroupIDs []int
+		MemberNames []string
 	}
-	responseStruct.GroupNames = groupNameList
-	responseStruct.GroupIDs = groupIDList
+	responseStruct.MemberNames = membersNameList
 	return utils.JSONResponse{
 		StatusCode: 200,
 		Data:       responseStruct,

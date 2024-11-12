@@ -442,7 +442,18 @@ func RejectGroupInvite(userID int, groupID int) error {
 	return nil
 }
 
-
+/*
+*  List all groups that a user is a member of.
+*
+*  Arguments:
+*      - userID (int): The ID of the user.
+*  
+*  Returns:
+*      - string: The list of all groupnames the user is a member of.
+*      - int: The groupIDs of all groups the user is a member of.
+*      - error: An error if any occurred.
+*
+*/
 func GetGroups(userID int) ([]string, []int, error) {
     var groupNames []string;
 	var groupIDs []int;
@@ -456,7 +467,6 @@ func GetGroups(userID int) ([]string, []int, error) {
         return nil, nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
     }
     defer query.Close();
-	fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", query);
 
 	rows, err := query.Query(userID)
 	var groupName string
@@ -468,7 +478,7 @@ func GetGroups(userID int) ([]string, []int, error) {
 		)
 		groupName, err = GetGroupNameByGroupID(groupID)
 		if(err != nil){
-			return nil, nil, fmt.Errorf("[ERROR] Failed to find groups %d. %w", groupID, err);
+			return nil, nil, fmt.Errorf("[ERROR] Failed to find groups %d. %w", userID, err);
 		}
 		groupNames = append(groupNames, groupName)
 		groupIDs = append(groupIDs, groupID)
@@ -509,4 +519,65 @@ func GetGroupNameByGroupID(groupID int) (string, error) {
     }
 
     return group.GroupName, nil;
+}
+
+/*
+*  List all members of a group.
+*
+*  Arguments:
+*      - groupID (int): The ID of the group.
+*  
+*  Returns:
+*      - string: The list of all users that are members of the group.
+*      - error: An error if any occurred.
+*
+*/
+func GetMembers(groupID int) ([]string, error) {
+    var memberNames []string;
+    instance, err := db.GetMariaDB();
+    if err != nil {
+        return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+    }
+
+    query, err := instance.Connection.Prepare("SELECT * FROM UserGroup WHERE GroupID = ?")
+    if err != nil {
+        return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
+    }
+    defer query.Close();
+
+	rows, err := query.Query(groupID)
+	var userID int
+	var GroupID int
+	var Username string
+	for rows.Next() {
+		err = rows.Scan(
+			&userID,
+			&GroupID,
+
+		)
+		if(err != nil){
+			return nil, fmt.Errorf("[ERROR] Failed to find users %d. %w", userID, err);
+		}
+		//
+		instance2, err := db.GetMariaDB();
+		if err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
+		}
+
+		query2, err := instance2.Connection.Prepare("SELECT Username FROM Users WHERE UserID = ?")
+		if err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
+		}
+		defer query2.Close();
+
+		err = query2.QueryRow(userID).Scan(
+			&Username,  
+		);
+		if err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find group with GroupID %d. %w", groupID, err);
+		}
+		//
+		memberNames = append(memberNames, Username)
+	}
+    return memberNames, nil;	
 }

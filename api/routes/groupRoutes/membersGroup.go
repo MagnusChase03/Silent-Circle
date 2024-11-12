@@ -1,6 +1,6 @@
 /* =========================================================================
-*  File Name: routes/groupRoutes/getGroup.go
-*  Description: Handler for finding all groups a user is a part of.
+*  File Name: routes/groupRoutes/membersGroup.go
+*  Description: Handler for listing all members in a group.
 *  Author: Matthew-Basinger
 *  =======================================================================*/
 package groupRoutes
@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/MagnusChase03/CS4389-Project/controllers/groupControllers"
 	"github.com/MagnusChase03/CS4389-Project/session"
@@ -16,7 +17,7 @@ import (
 )
 
 /*
-*  Handles the control flow for the retrieval of group routes.
+*  Handles the control flow for the retrieval of group members routes.
 *
 *  Arguments:
 *      - w (http.ResponseWriter): The object that is used to write a response.
@@ -25,7 +26,7 @@ import (
 *  Returns:
 *      - N/A
  */
-func GetGroupHandler(w http.ResponseWriter, r *http.Request) {
+func GroupMembersHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		utils.SendBadRequest(w)
 		return
@@ -37,7 +38,7 @@ func GetGroupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, _, err := session.ParseUserCookie(cookie.Value)
+	_, _, err = session.ParseUserCookie(cookie.Value)
 	if err != nil {
 		utils.SendUnauthorizedRequest(w)
 		return
@@ -50,7 +51,15 @@ func GetGroupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := groupControllers.GetGroupController(userID)
+	groupID, err := strconv.Atoi(r.FormValue("groupID"))
+	if groupID < 1 {
+		fmt.Printf("[ERROR] groupID invalid.\n")
+		utils.SendBadRequest(w)
+		return
+	}
+
+
+	resp, err := groupControllers.MembersGroupController(groupID)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[ERROR] %v\n", err)
 	}

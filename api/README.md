@@ -564,6 +564,31 @@ $ sudo podman stop cs4389-api
 }
 ```
 
+### /group/members
+
+*Route to  retrieve users in a group.*
+
+**Method**: `GET`
+
+**Body**: 
+
+**Example**: `https://api.application.com/group/get`
+
+**Returns**: `200`, `400`
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
 ### /group/invite
 
 *Route to send a group invite to a user.*
