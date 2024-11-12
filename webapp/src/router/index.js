@@ -39,6 +39,10 @@ const router = createRouter({
             name: 'group-chat',
             component: GroupChatPage,
             props: true
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: '/'
         }
     ]
 })
