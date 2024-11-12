@@ -570,7 +570,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `GET`
 
-**Body**: 
+**Body**: `groupID`
 
 **Example**: `https://api.application.com/group/get`
 
