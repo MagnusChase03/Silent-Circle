@@ -3,14 +3,14 @@
         <h1>Create Account</h1>
         <form @submit.prevent="createUser">
             <div>
-                <label for="username">Username:</label>
+                <label for="username">Username1:</label>
                 <input type="text" id="username" v-model="username" required>
             </div>
             <div>
-                <label for="password">Password:</label>
+                <label for="password">Password2:</label>
                 <input type="password" id="password" v-model="password" required>
             </div>
-            <button type="submit">Create Account</button>
+            <button type="submit">Create Account123</button>
         </form>
     </div>
 </template>
