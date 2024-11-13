@@ -4,9 +4,7 @@
     <div class="page-background">
       <!-- Header -->
       <header class="header">
-        <button class="menu-button">
-          <span class="menu-icon"></span>
-        </button>
+
         <!-- Title and search -->
         <h1 class="group-title">CS 4389 Group</h1>
         <div class="search-container">
@@ -191,40 +189,6 @@
     align-items: center;
     gap: 1rem;
     border-radius: 0px 0px 0 0;
-  }
-  
-  .menu-button {
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-  
-  .menu-icon {
-    position: relative;
-    width: 20px;
-    height: 2px;
-    background-color: white;
-  }
-  
-  .menu-icon::before,
-  .menu-icon::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 2px;
-    background-color: white;
-    left: 0;
-  }
-  
-  .menu-icon::before {
-    top: -6px;
-  }
-  
-  .menu-icon::after {
-    top: 6px;
   }
   
   .group-title {
