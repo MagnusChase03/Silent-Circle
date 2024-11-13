@@ -1,172 +1,128 @@
 <template>
+  <div id="wrapper">
     <div class="login-container">
       <div class="icon-chat"></div> <!-- Top-right icon -->
       <div class="icon-person-desktop"></div> <!-- Center-right icon -->
-      
+
       <div class="login-logo">
         <!-- Logo image -->
       </div>
       <h1>Create User Account</h1>
-      
-  
-      <form @submit.prevent="handleLogin">
+
+
+      <form @submit.prevent="createUser">
         <div class="input-group">
-          <input type="text" placeholder="Username" v-model="username" class="icon-username" />
+          <input type="text" placeholder="Username" v-model="username" class="icon-username" required />
         </div>
         <div class="input-group">
-          <input type="text" placeholder="Phone" v-model="phone" class="icon-phone" />
+          <input type="password" placeholder="Password" v-model="password" class="icon-password" required />
         </div>
         <div class="input-group">
-          <input type="text" placeholder="Choose Profile Picture" v-model="profilePicture" class="icon-profile-picture" />
-        </div>
-        <div class="input-group">
-          <input type="email" placeholder="Email" v-model="email" class="icon-email" />
-        </div>
-        <div class="input-group">
-          <input type="password" placeholder="Password" v-model="password" class="icon-password" />
-        </div>
-        <div class="input-group">
-          <input type="password" placeholder="Confirm Password" v-model="confirmPassword" class="icon-password" />
+          <input type="password" placeholder="Confirm Password" v-model="confirmPassword" class="icon-password" required/>
         </div>
         <button type="submit">Create User</button>
         <div class="have-account">
           <p class="status-bar" :style="{ color: statusBarColor }">{{ statusBarMessage }}</p>
-          <p class="">Already have an account: <a href="#" class="login">Log in</a></p>
+          <p class="">Already have an account:  
+            <router-link to="/login" class="login">Log in</router-link>
+          </p>
         </div>
       </form>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   export default {
-
+    name: 'CreateUserPage',
     setup() {
-        const username = ref('');
-        const password = ref('');
-        const publicKey = ref(null);
-        const router = useRouter();
+      const statusBarMessage = ref(''); // For displaying messages
+      const statusBarColor = ref(''); // For setting message color
+      const username = ref('');
+      const password = ref('');
+      const confirmPassword = ref('');
+      const publicKey = ref(null);
+      const privateKey = ref(null);
+      const router = useRouter();
 
-        async function generateKeyPair() {
-            const keyPair = await window.crypto.subtle.generateKey(
-                {
-                    name: "RSA-OAEP",
-                    modulusLength: 2048,
-                    publicExponent: new Uint8Array([1, 0, 1]),
-                    hash: "SHA-256"
-                },
-                true,
-                ["encrypt", "decrypt"]
-            );
-
-            const exportedPublicKey = await window.crypto.subtle.exportKey(
-                "spki",
-                keyPair.publicKey
-            );
-
-            publicKey.value = exportedPublicKey;
-        }
-
-        async function createUser() {
-            await generateKeyPair();
-
-            const publicKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(publicKey.value)));
-
-            const response = await fetch('/api/create-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: username.value,
-                    password: password.value,
-                    publicKey: publicKeyBase64
-                })
-            });
-
-            if (response.ok) {
-                router.push('/login');
-            } else {
-                console.error('Failed to create user');
-            }
-        }
-
-        return {
-            username,
-            password,
-            createUser
-        };
-    },
-    data() {
-      return {
-        username: 'Test name',
-        phone: '123-456-7891',
-        email: 'test@gmail.com',
-        password: 'Testing@12345',
-        confirmPassword: 'Testing@12345',
-        profilePicture: '/assets/img/chat_icon.png',
-        statusBarMessage: '', // For displaying messages
-        statusBarColor: '', // For setting message color
-        profilePicture: '/assets/img/username_icon.png',
-      };
-    },
-  
-    methods: {
-      validatePassword() {
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  
-        if (!passwordRegex.test(this.password)) {
-          this.statusBarMessage = "Password must be at least 8 characters long, contain uppercase, lowercase, number, and a special character.";
-          this.statusBarColor = "red";
-          return false;
-        }
-  
-        if (this.password !== this.confirmPassword) {
-          this.statusBarMessage = "Passwords do not match.";
-          this.statusBarColor = "red";
+      function validatePassword() {
+        if (password.value != confirmPassword.value) {
+          statusBarMessage.value = "Passwords do not match.";
+          statusBarColor.value = "red";
           return false;
         }
   
         // Clear any previous messages if validation is successful
-        this.statusBarMessage = "";
+        statusBarMessage.value = "";
         return true;
-      },
-  
-      async handleLogin() {
+      }
+
+      async function generateKeyPair() {
+        // Generate a new RSA key pair
+        const keyPair = await window.crypto.subtle.generateKey(
+          {
+            name: "RSA-OAEP",
+            modulusLength: 2048,
+            publicExponent: new Uint8Array([1, 0, 1]),
+            hash: "SHA-256"
+          },
+          true,
+          ["encrypt", "decrypt"]
+        );
+        // Export the public key and private key
+        publicKey.value = keyPair.publicKey;
+        privateKey.value = keyPair.privateKey;
+      }
+
+      async function createUser() {
         // Run validation first
-        if (!this.validatePassword()) {
+        if (!validatePassword()) {
           return; // Stop if validation fails
         }
-        
-        try {
-          const response = await fetch("https://localhost:8081/user/create", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              username: this.username,
-              password: this.password,
-              publicKey: this.publicKey // Ensure this property is defined in your data
-            })
-          });
-          
-          const data = await response.json();
-          
-          if (data.StatusCode === 200) {
-            this.statusBarMessage = "User created successfully!";
-            this.statusBarColor = "green"; // Set text color to green for success
-          } else {
-            this.statusBarMessage = "Failed to create user. " + data.Data;
-            this.statusBarColor = "red"; // Set text color to red for failure
+
+        // Generate a new key pair
+        await generateKeyPair();
+
+        // Convert the public key and private key to base64 string which is easier to send over the network or store in a database
+        const publicKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("spki", publicKey.value))));
+        const privateKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("pkcs8", privateKey.value))));
+
+        await fetch(import.meta.env.VITE_API_URL + "/user/create", {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `username=${username.value}&password=${password.value}&publicKey=${publicKeyBase64}`,
+        }).then((res) => {
+          if(!res.ok){
+            // If the response is not ok, throw an error
+            throw new Error(`Http error! Status: ${res.status}`);
           }
-        } catch (error) {
-          console.error("Error creating user:", error);
-          this.statusBarMessage = "An error occurred. Please try again.";
-          this.statusBarColor = "red";
-        }
+          // Return the response as JSON
+          return res.json();
+        }).then((data) => {
+          if(data.StatusCode==200){
+            console.log(data)
+            // Save the private key in the local storage
+            localStorage.setItem('privateKey', privateKeyBase64);
+            
+            // Redirect to the home page
+            alert("Create account successful");
+            router.push('/login');
+          }
+          // If the response is not ok, throw an error
+        }).catch((error) => console.error("Unable to tetch data:",error));
       }
+      return {
+        statusBarMessage,
+        statusBarColor,
+        username,
+        password,
+        confirmPassword,
+        createUser
+      };
     }
   };
   </script>

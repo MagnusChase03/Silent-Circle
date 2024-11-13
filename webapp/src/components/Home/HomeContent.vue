@@ -16,11 +16,14 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 export default {
     name: 'HomeContent',
     setup() {
+        const privateKey = ref(localStorage.getItem('privateKey'));
+        console.log('Private Key:', privateKey.value);
+
         //const groups = ref([]);
         const groups = ref([
             {
