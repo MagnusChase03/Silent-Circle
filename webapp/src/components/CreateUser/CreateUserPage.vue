@@ -38,6 +38,7 @@
   export default {
     name: 'CreateUserPage',
     setup() {
+      // data
       const statusBarMessage = ref(''); // For displaying messages
       const statusBarColor = ref(''); // For setting message color
       const username = ref('');
@@ -47,6 +48,7 @@
       const privateKey = ref(null);
       const router = useRouter();
 
+      // methods
       function validatePassword() {
         if (password.value != confirmPassword.value) {
           statusBarMessage.value = "Passwords do not match.";
@@ -94,7 +96,7 @@
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          body: `username=${username.value}&password=${password.value}&publicKey=${publicKeyBase64}`,
+          body: `username=${username.value}&password=${password.value}&publicKey=${encodeURIComponent(publicKeyBase64)}`,
         }).then((res) => {
           if(!res.ok){
             // If the response is not ok, throw an error
@@ -107,7 +109,7 @@
             console.log(data)
             // Save the private key in the local storage
             localStorage.setItem('privateKey', privateKeyBase64);
-            
+
             // Redirect to the home page
             alert("Create account successful");
             router.push('/login');

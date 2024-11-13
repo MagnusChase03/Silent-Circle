@@ -21,8 +21,7 @@ import { onMounted, ref } from 'vue';
 export default {
     name: 'HomeContent',
     setup() {
-        const privateKey = ref(localStorage.getItem('privateKey'));
-        console.log('Private Key:', privateKey.value);
+        // data
 
         //const groups = ref([]);
         const groups = ref([
