@@ -621,7 +621,13 @@ func GetGroups(userID int) ([]Group, error) {
 		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
 	}
 
-	query, err := instance.Connection.Prepare("SELECT * FROM UserGroup WHERE UserID = ?")
+	query, err := instance.Connection.Prepare(`
+		SELECT Groups.GroupID, Groups.CreatorID, Groups.GroupName
+		FROM Groups
+		JOIN UserGroup
+		ON Groups.GroupID = UserGroup.GroupID
+		WHERE UserGroup.UserID = ?
+	`)
 	if err != nil {
 		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
 	}
