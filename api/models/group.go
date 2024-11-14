@@ -496,6 +496,7 @@ func InsertMessage(userID int, groupID int, message string) error {
 *	   - end (string): The end date.
 *
 *  Returns:
+*	   - []Message: The list of messages.
 *      - error: An error if any occurred.
 *
  */
@@ -564,6 +565,9 @@ func GetMessages(userID int, groupID int, start string, end string) ([]Message, 
 *    - userID (int): The userID.
 *    - groupID (int): The groupID.
 *    - username (string): The user to remove.
+*
+*  Returns:
+*      - error: An error if any occurred.
  */
 func RemoveGroupUser(userID int, groupID int, username string) error {
 	instance, err := db.GetMariaDB()
@@ -599,4 +603,43 @@ func RemoveGroupUser(userID int, groupID int, username string) error {
 	}
 
 	return nil
+}
+
+/*
+*  Returns a list of groups the user is in.
+*
+*  Args:
+*      - userID (int): The ID of the user.
+*
+*  Returns:
+*      - []Group: The list of groups the user is in.
+*      - error: The error if any occured.
+ */
+func GetGroups(userID int) ([]Group, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	query, err := instance.Connection.Prepare("SELECT * FROM UserGroup WHERE UserID = ?")
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	rows, err := query.Query(userID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find groups. %w", err)
+	}
+
+	groups := make([]Group, 0)
+	for rows.Next() {
+		var m Group
+		if err := rows.Scan(&m.GroupID, &m.CreatorID, &m.GroupName); err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find message. %w", err)
+		}
+		groups = append(groups, m)
+	}
+
+	return groups, nil
 }

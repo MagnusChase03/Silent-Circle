@@ -35,6 +35,23 @@ func ChatController(client *websocket.Conn, userID int, groupID int) error {
 		return fmt.Errorf("[ERROR] Failed to get user. %w", err)
 	}
 
+	groups, err := models.GetGroups(userID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get user groups. %w", err)
+	}
+
+	found := false
+	for _, g := range groups {
+		if g.GroupID == groupID {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("[ERROR] User is not apart of group. %w", err)
+	}
+
 	subscriber := db.Connection.Subscribe(db.Ctx, fmt.Sprintf("chat-%d", groupID))
 	defer subscriber.Close()
 
