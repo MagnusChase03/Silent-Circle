@@ -451,6 +451,18 @@ func RejectGroupInvite(userID int, groupID int) error {
 	return nil
 }
 
+/*
+*  Inserts a new message into the database.
+*
+*  Arguments:
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*	   - message (string): The message to be added.
+*
+*  Returns:
+*      - error: An error if any occurred.
+*
+ */
 func InsertMessage(userID int, groupID int, message string) error {
 	instance, err := db.GetMariaDB()
 	if err != nil {
@@ -473,6 +485,19 @@ func InsertMessage(userID int, groupID int, message string) error {
 	return nil
 }
 
+/*
+*  Returns the list of message within the group.
+*
+*  Arguments:
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*	   - start (string): The start date.
+*	   - end (string): The end date.
+*
+*  Returns:
+*      - error: An error if any occurred.
+*
+ */
 func GetMessages(userID int, groupID int, start string, end string) ([]Message, error) {
 	instance, err := db.GetMariaDB()
 	if err != nil {
