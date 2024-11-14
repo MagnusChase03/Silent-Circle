@@ -472,3 +472,61 @@ func InsertMessage(userID int, groupID int, message string) error {
 
 	return nil
 }
+
+func GetMessages(userID int, groupID int, start string, end string) ([]Message, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	query, err := instance.Connection.Prepare("SELECT UserID FROM UserGroup WHERE UserID = ? AND GroupID = ?")
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var matchUserID int
+	err = query.QueryRow(userID, groupID).Scan(&matchUserID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find group assossiated with user. %w", err)
+	}
+
+	startTime, err := time.Parse(time.DateOnly, start)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Invalid start time. %w", err)
+	}
+
+	endTime, err := time.Parse(time.DateOnly, end)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Invalid end time. %w", err)
+	}
+
+	query, err = instance.Connection.Prepare(`
+		SELECT UserID, GroupID, Timestamp, EncryptedMessage
+		FROM Messages
+		WHERE GroupID = ? AND
+		Timestamp >= ? AND
+		Timestamp <= ?
+		ORDER BY Timestamp ASC
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	rows, err := query.Query(groupID, startTime, endTime)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find messages. %w", err)
+	}
+
+	messages := make([]Message, 0)
+	for rows.Next() {
+		var m Message
+		if err := rows.Scan(&m.UserID, &m.GroupID, &m.Timestamp, &m.EncryptedMessage); err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find message. %w", err)
+		}
+		messages = append(messages, m)
+	}
+
+	return messages, nil
+}
