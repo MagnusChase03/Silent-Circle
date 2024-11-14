@@ -71,38 +71,38 @@ func GetGroupByID(id int) (Group, error) {
 *      - error: An error if any occurred.
 *
  */
-func CreateGroup(creatorID int, groupName string) error {
+func CreateGroup(creatorID int, groupName string) (int, error) {
 	instance, err := db.GetMariaDB()
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+		return 0, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
 	}
 
 	insertStatement, err := instance.Connection.Prepare(
 		"INSERT INTO Groups(CreatorID, GroupName) VALUES (?, ?)",
 	)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+		return 0, fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
 	}
 	defer insertStatement.Close()
 
 	_, err = insertStatement.Exec(creatorID, groupName)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to create group. %w", err)
+		return 0, fmt.Errorf("[ERROR] Failed to create group. %w", err)
 	}
 
 	groupID, err := GetGroupIDByGroupName(groupName)
 	if err != nil {
-		err = DeleteGroup(groupName)
-		return fmt.Errorf("[ERROR] Failed to create group. %w", err)
+		err = DeleteGroup(creatorID, groupID)
+		return 0, fmt.Errorf("[ERROR] Failed to create group. %w", err)
 	}
 
 	err = AddCreatorUserGroup(creatorID, groupID)
 	if err != nil {
-		err = DeleteGroup(groupName)
-		return fmt.Errorf("[ERROR] Failed to add creator to group. %w", err)
+		err = DeleteGroup(creatorID, groupID)
+		return 0, fmt.Errorf("[ERROR] Failed to add creator to group. %w", err)
 	}
 
-	return nil
+	return groupID, nil
 
 }
 
@@ -111,26 +111,27 @@ func CreateGroup(creatorID int, groupName string) error {
 *
 *  Arguments:
 *      - groupID (int): The groupID.
+*      - userID (int): The userID.
 *
 *  Returns:
 *      - error: An error if any occurred.
 *
  */
-func DeleteGroup(groupname string) error {
+func DeleteGroup(userID int, groupID int) error {
 	instance, err := db.GetMariaDB()
 	if err != nil {
 		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
 	}
 
 	deleteStatement, err := instance.Connection.Prepare(
-		"DELETE FROM Groups WHERE GroupName = ?",
+		"DELETE FROM Groups WHERE GroupID = ? AND CreatorID = ?",
 	)
 	if err != nil {
 		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
 	}
 	defer deleteStatement.Close()
 
-	_, err = deleteStatement.Exec(groupname)
+	_, err = deleteStatement.Exec(groupID, userID)
 	if err != nil {
 		return fmt.Errorf("[ERROR] Failed to delete group. %w", err)
 	}

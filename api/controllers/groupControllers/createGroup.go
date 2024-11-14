@@ -25,7 +25,7 @@ import (
 *
  */
 func CreateGroupController(creatorID int, groupname string) (utils.JSONResponse, error) {
-	err := models.CreateGroup(creatorID, groupname)
+	groupID, err := models.CreateGroup(creatorID, groupname)
 	if err != nil {
 		return utils.JSONResponse{
 			StatusCode: 401,
@@ -33,8 +33,13 @@ func CreateGroupController(creatorID int, groupname string) (utils.JSONResponse,
 		}, fmt.Errorf("[ERROR] Failed to create group. %w", err)
 	}
 
+	var responseStruct struct {
+		GroupID int
+	}
+	responseStruct.GroupID = groupID
+
 	return utils.JSONResponse{
 		StatusCode: 200,
-		Data:       "Ok",
+		Data:       responseStruct,
 	}, nil
 }

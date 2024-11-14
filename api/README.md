@@ -458,7 +458,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**: `creatorID`, `groupname`
+**Body**: `groupname`
 
 **Example**: `https://api.application.com/group/create`
 
@@ -467,7 +467,9 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "StatusCode": 200,
-    "Data": "Ok"
+    "Data": {
+      "GroupID": 1
+    }
 }
 ```
 
@@ -484,7 +486,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**: `groupame`
+**Body**: `group` (groupID)
 
 **Example**: `https://api.application.com/group/delete`
 
@@ -515,7 +517,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**: `userID`, `groupname`, `groupID`
+**Body**: `groupname`, `groupID`
 
 **Example**: `https://api.application.com/group/update`
 
