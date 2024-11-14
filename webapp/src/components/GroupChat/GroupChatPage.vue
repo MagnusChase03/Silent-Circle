@@ -52,10 +52,13 @@
         </div>
 
         <!-- Plus Sign Button at the Top Right -->
-        <button class="plus-button">+</button>
+        <button class="plus-button">
+          <router-link to="/add-member">+</router-link></button>
 
         <!-- Minus Sign Button underneath Plus Button -->
-        <button class="minus-button">-</button>
+        <button class="minus-button">
+          <router-link to="/delete-user">-</router-link>
+        </button>
       </div>
     </div>
     <SCLogo></SCLogo>
@@ -232,7 +235,7 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);*/
 }
 
 .plus-button:hover {
@@ -255,7 +258,7 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);*/
 }
 
 .minus-button:hover {
