@@ -19,54 +19,56 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 export default {
     name: 'HomeContent',
     setup() {
-        const groups = ref([]);
-        // const groups = ref([
-        //     {
-        //         "groupId": "101",
-        //         "groupName": "CS4389"
-        //     },
-        //     {
-        //         "groupId": "102",
-        //         "groupName": "Work"
-        //     },
-        //     {
-        //         "groupId": "103",
-        //         "groupName": "Family"
-        //     },
-        //     {
-        //         "groupId": "104",
-        //         "groupName": "Sports"
-        //     },
-        //     {
-        //         "groupId": "105",
-        //         "groupName": "Book Club"
-        //     },
-        //     {
-        //         "groupId": "106",
-        //         "groupName": "CS4389"
-        //     },
-        //     {
-        //         "groupId": "107",
-        //         "groupName": "Work"
-        //     },
-        //     {
-        //         "groupId": "108",
-        //         "groupName": "Family"
-        //     },
-        //     {
-        //         "groupId": "109",
-        //         "groupName": "Sports"
-        //     },
-        //     {
-        //         "groupId": "1010",
-        //         "groupName": "Book Club"
-        //     }
-        // ]);
+        // data
+
+        //const groups = ref([]);
+        const groups = ref([
+            {
+                "groupId": "101",
+                "groupName": "CS4389"
+            },
+            {
+                "groupId": "102",
+                "groupName": "Work"
+            },
+            {
+                "groupId": "103",
+                "groupName": "Family"
+            },
+            {
+                "groupId": "104",
+                "groupName": "Sports"
+            },
+            {
+                "groupId": "105",
+                "groupName": "Book Club"
+            },
+            {
+                "groupId": "106",
+                "groupName": "CS4389"
+            },
+            {
+                "groupId": "107",
+                "groupName": "Work"
+            },
+            {
+                "groupId": "108",
+                "groupName": "Family"
+            },
+            {
+                "groupId": "109",
+                "groupName": "Sports"
+            },
+            {
+                "groupId": "1010",
+                "groupName": "Book Club"
+            }
+        ]);
 
         return { groups }
     }
