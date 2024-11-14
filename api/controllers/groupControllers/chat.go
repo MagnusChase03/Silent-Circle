@@ -43,6 +43,7 @@ func ChatController(client *websocket.Conn, userID int, groupID int) error {
 			msg, err := subscriber.ReceiveMessage(db.Ctx)
 			if err != nil {
 				fmt.Printf("[ERROR] Failed to receive message. %v\n", err)
+				return
 			}
 
 			var data struct {
@@ -53,6 +54,7 @@ func ChatController(client *websocket.Conn, userID int, groupID int) error {
 			err = client.WriteJSON(data)
 			if err != nil {
 				fmt.Printf("[ERROR] Failed to send message to client. %v\n", err)
+				return
 			}
 		}
 	}()
@@ -71,6 +73,11 @@ func ChatController(client *websocket.Conn, userID int, groupID int) error {
 			fmt.Sprintf("chat-%d", groupID),
 			fmt.Sprintf("%s-%s", user.Username, data.Message),
 		).Err()
+		if err != nil {
+			return fmt.Errorf("[ERROR] Failed to publish message from client. %w", err)
+		}
+
+		err = models.InsertMessage(userID, groupID, data.Message)
 		if err != nil {
 			return fmt.Errorf("[ERROR] Failed to publish message from client. %w", err)
 		}
