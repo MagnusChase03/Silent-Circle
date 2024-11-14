@@ -24,21 +24,8 @@ import (
 *      - error: An error if any occurred.
 *
  */
-func DeleteGroupController(groupname string, userID int) (utils.JSONResponse, error) {
-	creatorID, err := models.GetCreatorIDByGroupName(groupname)
-	if err != nil {
-		return utils.JSONResponse{
-			StatusCode: 401,
-			Data:       "Failed to delete group.",
-		}, fmt.Errorf("[ERROR] Failed to delete group. %w", err)
-	} else if creatorID != userID {
-		return utils.JSONResponse{
-			StatusCode: 401,
-			Data:       "Failed to delete group.",
-		}, fmt.Errorf("[ERROR] Not group creator. %w", err)
-	}
-
-	err = models.DeleteGroup(groupname)
+func DeleteGroupController(groupID int, userID int) (utils.JSONResponse, error) {
+	err := models.DeleteGroup(userID, groupID)
 	if err != nil {
 		return utils.JSONResponse{
 			StatusCode: 401,
