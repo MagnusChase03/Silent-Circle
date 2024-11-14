@@ -20,6 +20,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Reject friend request](#userfriendreject)
 - [Remove friend](#userfriendremove)
 - [Get friend](#userfriendget)
+- [Get groups](#usergroups)
 - [Listen for friend request](#userfriendlisten)
 
 **Group**
@@ -32,6 +33,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Listen for group invites](#groupinvitelisten)
 - [Listen for group chat](#groupchat)
 - [Get Messages](#groupmessages)
+- [Get Users](#groupusers)
 - [Remove User](#groupban)
 
 **Misc.**
@@ -435,6 +437,47 @@ $ sudo podman stop cs4389-api
 }
 ```
 
+### /user/groups
+
+*Route to get a list groups a user is in.*
+
+**Method**: `GET`
+
+**Body**: `N/A`
+
+**Example**: `https://api.application.com/user/groups`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode":200,
+    "Data": {
+        "Groups": [
+          {
+            "GroupID": 1,
+            "CreatorID": 2,
+            "GroupName": "Foo"
+          }
+        ]
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
 ### /user/friend/listen
 
 *Websocket to listen for when friend requests occur for the user.*
@@ -746,6 +789,43 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 200,
     "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/users
+
+*Route to get a list users in a group.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/users`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode":200,
+    "Data": {
+        "Users": [
+          "root"
+        ]
+    }
 }
 ```
 
