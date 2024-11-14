@@ -31,6 +31,8 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Group Reject](#groupinvitereject)
 - [Listen for group invites](#groupinvitelisten)
 - [Listen for group chat](#groupchat)
+- [Get Messages](#groupmessages)
+- [Remove User](#groupban)
 
 **Misc.**
 
@@ -457,7 +459,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**: `creatorID`, `groupname`
+**Body**: `groupname`
 
 **Example**: `https://api.application.com/group/create`
 
@@ -466,7 +468,9 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "StatusCode": 200,
-    "Data": "Ok"
+    "Data": {
+      "GroupID": 1
+    }
 }
 ```
 
@@ -483,7 +487,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**: `groupame`
+**Body**: `group` (groupID)
 
 **Example**: `https://api.application.com/group/delete`
 
@@ -514,7 +518,7 @@ $ sudo podman stop cs4389-api
 
 **Method**: `POST`
 
-**Body**:  `groupname`, `groupID`
+**Body**: `groupname`, `groupID`
 
 **Example**: `https://api.application.com/group/update`
 
@@ -731,5 +735,80 @@ $ sudo podman stop cs4389-api
 ```JSON
 {
     "Message": "<Encrypted Message>"
+}
+```
+
+### /group/messages
+
+*Route to return messages from a group.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID), `start`, `end` (2024-01-01, inclusive range)
+
+**Example**: `https://api.application.com/group/messages`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": {
+      "Messages": [
+        {
+          "UserID": 1,
+          "GroupID": 1,
+          "Timestamp": "<datetime>"
+          "EncryptedMessage": "asdfasdfasdf"
+        }
+      ]
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/ban
+
+*Remoes a user from the group*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID), `username`
+
+**Example**: `https://api.application.com/group/ban`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
 }
 ```

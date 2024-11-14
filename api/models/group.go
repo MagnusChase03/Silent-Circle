@@ -7,6 +7,7 @@ package models
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/MagnusChase03/CS4389-Project/db"
 )
@@ -15,6 +16,13 @@ type Group struct {
 	GroupID   int
 	CreatorID int
 	GroupName string
+}
+
+type Message struct {
+	UserID           int
+	GroupID          int
+	Timestamp        time.Time
+	EncryptedMessage string
 }
 
 /*
@@ -63,39 +71,39 @@ func GetGroupByID(id int) (Group, error) {
 *      - error: An error if any occurred.
 *
  */
-func CreateGroup(creatorID int, groupName string) error {
+func CreateGroup(creatorID int, groupName string) (int, error) {
 	instance, err := db.GetMariaDB()
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+		return 0, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
 	}
 
 	insertStatement, err := instance.Connection.Prepare(
 		"INSERT INTO Groups(CreatorID, GroupName) VALUES (?, ?)",
 	)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+		return 0, fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
 	}
 	defer insertStatement.Close()
 
-    _, err = insertStatement.Exec(creatorID, groupName);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to create group. %w", err);
-    }
-    
-    groupID, err := GetGroupIDByGroupName(groupName);
-    if err != nil {
-        err = DeleteGroup(groupName);
-        return fmt.Errorf("[ERROR] Failed to create group. %w", err);
-    }
-    
-    err = AddCreatorUserGroup(creatorID, groupID);
-    if err != nil {
-        err = DeleteGroup(groupName);
-        return fmt.Errorf("[ERROR] Failed to add creator to group. %w", err);
-    }
-    
-    return nil;
-    
+	_, err = insertStatement.Exec(creatorID, groupName)
+	if err != nil {
+		return 0, fmt.Errorf("[ERROR] Failed to create group. %w", err)
+	}
+
+	groupID, err := GetGroupIDByGroupName(groupName)
+	if err != nil {
+		err = DeleteGroup(creatorID, groupID)
+		return 0, fmt.Errorf("[ERROR] Failed to create group. %w", err)
+	}
+
+	err = AddCreatorUserGroup(creatorID, groupID)
+	if err != nil {
+		err = DeleteGroup(creatorID, groupID)
+		return 0, fmt.Errorf("[ERROR] Failed to add creator to group. %w", err)
+	}
+
+	return groupID, nil
+
 }
 
 /*
@@ -103,26 +111,27 @@ func CreateGroup(creatorID int, groupName string) error {
 *
 *  Arguments:
 *      - groupID (int): The groupID.
+*      - userID (int): The userID.
 *
 *  Returns:
 *      - error: An error if any occurred.
 *
  */
-func DeleteGroup(groupname string) error {
+func DeleteGroup(userID int, groupID int) error {
 	instance, err := db.GetMariaDB()
 	if err != nil {
 		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
 	}
 
 	deleteStatement, err := instance.Connection.Prepare(
-		"DELETE FROM Groups WHERE GroupName = ?",
+		"DELETE FROM Groups WHERE GroupID = ? AND CreatorID = ?",
 	)
 	if err != nil {
 		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
 	}
 	defer deleteStatement.Close()
 
-	_, err = deleteStatement.Exec(groupname)
+	_, err = deleteStatement.Exec(groupID, userID)
 	if err != nil {
 		return fmt.Errorf("[ERROR] Failed to delete group. %w", err)
 	}
@@ -170,34 +179,34 @@ func GetCreatorIDByGroupName(groupname string) (int, error) {
 *
 *  Arguments:
 *      - groupname (string): The groupname.
-*  
+*
 *  Returns:
 *      - error: An error if any occurred.
 *
-*/
+ */
 func GetGroupIDByGroupName(groupname string) (int, error) {
-    var group Group;
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return 0, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+	var group Group
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return 0, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    query, err := instance.Connection.Prepare("SELECT * FROM Groups WHERE GroupName = ?")
-    if err != nil {
-        return 0, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
-    }
-    defer query.Close();
+	query, err := instance.Connection.Prepare("SELECT * FROM Groups WHERE GroupName = ?")
+	if err != nil {
+		return 0, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
 
-    err = query.QueryRow(groupname).Scan(
-        &group.GroupID, 
-        &group.CreatorID, 
-        &group.GroupName, 
-    );
-    if err != nil {
-        return 0, fmt.Errorf("[ERROR] Failed to find group with GroupID %d. %w", groupname, err);
-    }
+	err = query.QueryRow(groupname).Scan(
+		&group.GroupID,
+		&group.CreatorID,
+		&group.GroupName,
+	)
+	if err != nil {
+		return 0, fmt.Errorf("[ERROR] Failed to find group with GroupID %d. %w", groupname, err)
+	}
 
-    return group.GroupID, nil;
+	return group.GroupID, nil
 }
 
 /*
@@ -249,26 +258,27 @@ func UpdateGroup(userID int, groupname string, groupID int) error {
 *
  */
 func AddCreatorUserGroup(creatorID int, groupID int) error {
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    insertStatement, err := instance.Connection.Prepare(
-        "INSERT INTO UserGroup(UserID, GroupID) VALUES (?, ?)",
-    );
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err);
-    }
-    defer insertStatement.Close();
+	insertStatement, err := instance.Connection.Prepare(
+		"INSERT INTO UserGroup(UserID, GroupID) VALUES (?, ?)",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer insertStatement.Close()
 
-    _, err = insertStatement.Exec(creatorID, groupID);
-    if err != nil {
-        return fmt.Errorf("[ERROR] Failed to add creator to group. %w", err);
-    }
-    
-    return nil;
+	_, err = insertStatement.Exec(creatorID, groupID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to add creator to group. %w", err)
+	}
+
+	return nil
 }
+
 /*
 *  Invites a given user to the given group.
 *
@@ -443,141 +453,150 @@ func RejectGroupInvite(userID int, groupID int) error {
 }
 
 /*
-*  List all groups that a user is a member of.
+*  Inserts a new message into the database.
 *
 *  Arguments:
-*      - userID (int): The ID of the user.
-*  
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*	   - message (string): The message to be added.
+*
 *  Returns:
-*      - string: The list of all groupnames the user is a member of.
-*      - int: The groupIDs of all groups the user is a member of.
 *      - error: An error if any occurred.
 *
-*/
-func GetGroups(userID int) ([]string, []int, error) {
-    var groupNames []string;
-	var groupIDs []int;
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return nil, nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
-
-    query, err := instance.Connection.Prepare("SELECT * FROM UserGroup WHERE UserID = ?")
-    if err != nil {
-        return nil, nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
-    }
-    defer query.Close();
-
-	rows, err := query.Query(userID)
-	var groupName string
-	var groupID int
-	for rows.Next() {
-		err = rows.Scan(
-			&groupName,
-			&groupID,
-		)
-		groupName, err = GetGroupNameByGroupID(groupID)
-		if(err != nil){
-			return nil, nil, fmt.Errorf("[ERROR] Failed to find groups %d. %w", userID, err);
-		}
-		groupNames = append(groupNames, groupName)
-		groupIDs = append(groupIDs, groupID)
+ */
+func InsertMessage(userID int, groupID int, message string) error {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
 	}
-    return groupNames, groupIDs, nil;	
+
+	insertStatement, err := instance.Connection.Prepare(
+		"INSERT INTO Messages(UserID, GroupID, Timestamp, EncryptedMessage) VALUES (?, ?, ?, ?)",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer insertStatement.Close()
+
+	_, err = insertStatement.Exec(userID, groupID, time.Now(), message)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to insert message. %w", err)
+	}
+
+	return nil
 }
 
 /*
-*  Determines the groupName of a group in the database with given groupID.
+*  Returns the list of message within the group.
 *
 *  Arguments:
-*      - groupID (int): The ID of the group.
-*  
+*      - userID (int): The userID sending the invite.
+*      - groupID (int): The groupID of the group.
+*	   - start (string): The start date.
+*	   - end (string): The end date.
+*
 *  Returns:
 *      - error: An error if any occurred.
 *
-*/
-func GetGroupNameByGroupID(groupID int) (string, error) {
-    var group Group;
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return "", fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
+ */
+func GetMessages(userID int, groupID int, start string, end string) ([]Message, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
 
-    query, err := instance.Connection.Prepare("SELECT * FROM Groups WHERE GroupID = ?")
-    if err != nil {
-        return "", fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
-    }
-    defer query.Close();
+	query, err := instance.Connection.Prepare("SELECT UserID FROM UserGroup WHERE UserID = ? AND GroupID = ?")
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
 
-    err = query.QueryRow(groupID).Scan(
-        &group.GroupID, 
-        &group.CreatorID, 
-        &group.GroupName, 
-    );
-    if err != nil {
-        return "", fmt.Errorf("[ERROR] Failed to find group with GroupID %d. %w", groupID, err);
-    }
+	var matchUserID int
+	err = query.QueryRow(userID, groupID).Scan(&matchUserID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find group assossiated with user. %w", err)
+	}
 
-    return group.GroupName, nil;
+	startTime, err := time.Parse(time.DateOnly, start)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Invalid start time. %w", err)
+	}
+
+	endTime, err := time.Parse(time.DateOnly, end)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Invalid end time. %w", err)
+	}
+
+	query, err = instance.Connection.Prepare(`
+		SELECT UserID, GroupID, Timestamp, EncryptedMessage
+		FROM Messages
+		WHERE GroupID = ? AND
+		Timestamp >= ? AND
+		Timestamp <= ?
+		ORDER BY Timestamp ASC
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	rows, err := query.Query(groupID, startTime, endTime)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find messages. %w", err)
+	}
+
+	messages := make([]Message, 0)
+	for rows.Next() {
+		var m Message
+		if err := rows.Scan(&m.UserID, &m.GroupID, &m.Timestamp, &m.EncryptedMessage); err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find message. %w", err)
+		}
+		messages = append(messages, m)
+	}
+
+	return messages, nil
 }
 
 /*
-*  List all members of a group.
+*  Removes a user from a group.
 *
-*  Arguments:
-*      - groupID (int): The ID of the group.
-*  
-*  Returns:
-*      - string: The list of all users that are members of the group.
-*      - error: An error if any occurred.
-*
-*/
-func GetMembers(groupID int) ([]string, error) {
-    var memberNames []string;
-    instance, err := db.GetMariaDB();
-    if err != nil {
-        return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-    }
-
-    query, err := instance.Connection.Prepare("SELECT * FROM UserGroup WHERE GroupID = ?")
-    if err != nil {
-        return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
-    }
-    defer query.Close();
-
-	rows, err := query.Query(groupID)
-	var userID int
-	var GroupID int
-	var Username string
-	for rows.Next() {
-		err = rows.Scan(
-			&userID,
-			&GroupID,
-
-		)
-		if(err != nil){
-			return nil, fmt.Errorf("[ERROR] Failed to find users %d. %w", userID, err);
-		}
-		//
-		instance2, err := db.GetMariaDB();
-		if err != nil {
-			return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err);
-		}
-
-		query2, err := instance2.Connection.Prepare("SELECT Username FROM Users WHERE UserID = ?")
-		if err != nil {
-			return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err);
-		}
-		defer query2.Close();
-
-		err = query2.QueryRow(userID).Scan(
-			&Username,  
-		);
-		if err != nil {
-			return nil, fmt.Errorf("[ERROR] Failed to find group with GroupID %d. %w", groupID, err);
-		}
-		//
-		memberNames = append(memberNames, Username)
+*  Args:
+*    - userID (int): The userID.
+*    - groupID (int): The groupID.
+*    - username (string): The user to remove.
+ */
+func RemoveGroupUser(userID int, groupID int, username string) error {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
 	}
-    return memberNames, nil;	
+
+	// Check owner
+	query, err := instance.Connection.Prepare("SELECT CreatorID FROM Groups WHERE CreatorID = ? AND GroupID = ?")
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var matchUserID int
+	err = query.QueryRow(userID, groupID).Scan(&matchUserID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to find group assossiated with user. %w", err)
+	}
+
+	// Remove user
+	deleteStatement, err := instance.Connection.Prepare(
+		"DELETE FROM UserGroup WHERE UserID = (select UserID from Users where Username = ?) AND GroupID = ?",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
+
+	_, err = deleteStatement.Exec(username, groupID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to delete invite. %w", err)
+	}
+
+	return nil
 }
