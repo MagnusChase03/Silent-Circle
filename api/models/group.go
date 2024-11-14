@@ -556,3 +556,47 @@ func GetMessages(userID int, groupID int, start string, end string) ([]Message, 
 
 	return messages, nil
 }
+
+/*
+*  Removes a user from a group.
+*
+*  Args:
+*    - userID (int): The userID.
+*    - groupID (int): The groupID.
+*    - username (string): The user to remove.
+ */
+func RemoveGroupUser(userID int, groupID int, username string) error {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	// Check owner
+	query, err := instance.Connection.Prepare("SELECT CreatorID FROM Groups WHERE CreatorID = ? AND GroupID = ?")
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var matchUserID int
+	err = query.QueryRow(userID, groupID).Scan(&matchUserID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to find group assossiated with user. %w", err)
+	}
+
+	// Remove user
+	deleteStatement, err := instance.Connection.Prepare(
+		"DELETE FROM UserGroup WHERE UserID = (select UserID from Users where Username = ?) AND GroupID = ?",
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to parse SQL query. %w", err)
+	}
+	defer deleteStatement.Close()
+
+	_, err = deleteStatement.Exec(username, groupID)
+	if err != nil {
+		return fmt.Errorf("[ERROR] Failed to delete invite. %w", err)
+	}
+
+	return nil
+}
