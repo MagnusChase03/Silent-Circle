@@ -113,7 +113,7 @@ export default {
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  max-width: 400px;
+  max-width: 700px;
   max-height: 1000px;
   background-color: white;
   padding-left: 30px;
@@ -137,7 +137,7 @@ export default {
   display: flex;
   justify-content: flex-end; /* Aligns the message to the right */
   margin: 10px 0; /* Add margin to separate messages */
-  margin-left: 50px;
+  margin-left: 400px;
 }
 
 .left .bubble {
@@ -181,7 +181,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 400px;
+  max-width: 700px;
   padding: 10px;
   background-color: #f3f3f3;
   border-top: 1px solid #ddd;
