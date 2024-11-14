@@ -9,7 +9,6 @@
       </div>
       <h1>Create User Account</h1>
 
-
       <form @submit.prevent="createUser">
         <div class="input-group">
           <input type="text" placeholder="Username" v-model="username" class="icon-username" required />
@@ -30,11 +29,15 @@
       </form>
     </div>
   </div>
+
 </template>
   
   <script>
+  // import { j } from 'vite/dist/node/types.d-aGj9QkWt';
   import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
+  import { useRouter } from 'vue-router'
+  import useAsymmetricKeys from '../../composables/useAsymmetricKeys.js';
+
   export default {
     name: 'CreateUserPage',
     setup() {
@@ -44,40 +47,31 @@
       const username = ref('');
       const password = ref('');
       const confirmPassword = ref('');
-      const publicKey = ref(null);
-      const privateKey = ref(null);
+      const publicKeyBase64 = ref('');
+      const privateKeyBase64 = ref('');
       const router = useRouter();
 
-      // methods
       function validatePassword() {
+        // commented out for easier testing
+        // const passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        // if (!passwordPattern.test(password.value)) {
+        //   statusBarMessage.value = "Password must be at least 8 characters long, contain at least one number, and one special character.";
+        //   statusBarColor.value = "red";
+        //   return false;
+        // }
+
         if (password.value != confirmPassword.value) {
           statusBarMessage.value = "Passwords do not match.";
           statusBarColor.value = "red";
           return false;
         }
-  
+
         // Clear any previous messages if validation is successful
         statusBarMessage.value = "";
         return true;
       }
 
-      async function generateKeyPair() {
-        // Generate a new RSA key pair
-        const keyPair = await window.crypto.subtle.generateKey(
-          {
-            name: "RSA-OAEP",
-            modulusLength: 2048,
-            publicExponent: new Uint8Array([1, 0, 1]),
-            hash: "SHA-256"
-          },
-          true,
-          ["encrypt", "decrypt"]
-        );
-        // Export the public key and private key
-        publicKey.value = keyPair.publicKey;
-        privateKey.value = keyPair.privateKey;
-      }
-
+      // methods
       async function createUser() {
         // Run validation first
         if (!validatePassword()) {
@@ -85,20 +79,21 @@
         }
 
         // Generate a new key pair
-        await generateKeyPair();
-
-        // Convert the public key and private key to base64 string which is easier to send over the network or store in a database
-        const publicKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("spki", publicKey.value))));
-        const privateKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(await window.crypto.subtle.exportKey("pkcs8", privateKey.value))));
+        const keyPair = await useAsymmetricKeys();
+        publicKeyBase64.value = keyPair.publicKeyBase64;
+        privateKeyBase64.value = keyPair.privateKeyBase64;
 
         await fetch(import.meta.env.VITE_API_URL + "/user/create", {
           method: 'POST',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          body: `username=${username.value}&password=${password.value}&publicKey=${encodeURIComponent(publicKeyBase64)}`,
+          body: `username=${username.value}&password=${password.value}&publicKey=${encodeURIComponent(publicKeyBase64.value)}`,
         }).then((res) => {
           if(!res.ok){
+            statusBarMessage.value = "Cannot create user account, username already exists.";
+            statusBarColor.value = "red";
+
             // If the response is not ok, throw an error
             throw new Error(`Http error! Status: ${res.status}`);
           }
@@ -106,9 +101,13 @@
           return res.json();
         }).then((data) => {
           if(data.StatusCode==200){
+            // log the data to the console
             console.log(data)
+            console.log("Public Key Initialized:", publicKeyBase64.value);
+            console.log("Private Key Initialized:", privateKeyBase64.value);
+
             // Save the private key in the local storage
-            localStorage.setItem('privateKey', privateKeyBase64);
+            localStorage.setItem('privateKey', privateKeyBase64.value);
 
             // Redirect to the home page
             alert("Create account successful");
@@ -129,7 +128,7 @@
   };
   </script>
   
-  <style>
+  <style scoped>
   :root {
     --title-color: white;
     --primary-color: #7b8fcd;

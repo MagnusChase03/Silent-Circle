@@ -45,8 +45,8 @@
         name: 'NavBar',
         setup(){
             // data
-            // const privateKey = ref(localStorage.getItem('privateKey'));
-            // const publicKey = ref('');
+            const privateKey = ref(localStorage.getItem('privateKey'));
+            const publicKey = ref('');
 
             const username = ref(localStorage.getItem('username'));
 
@@ -86,7 +86,7 @@
                     router.push('/');
                 }
 
-                // verify the public key from the server
+                // // verify the public key from the server
                 // fetch(import.meta.env.VITE_API_URL + "/user/get", {
                 //     // Send the username and password to the server
                 //     method: "POST",
@@ -111,8 +111,8 @@
                 //         publicKey.value = data.Data.PublicKey;
 
                 //         // Log the public key and private key to the console
-                //         console.log('Private Key Retrieved **:', privateKey.value);
-                //         console.log("Public Key Retrieved ***:", publicKey.value);
+                //         console.log('Private Key Retrieved:', privateKey.value);
+                //         console.log("Public Key Retrieved:", publicKey.value);
                 //     }
                 //     // If the response is not ok, throw an error
                 // }).catch((error) => console.error("Unable to tetch data:", error)

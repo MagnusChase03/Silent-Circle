@@ -6,6 +6,8 @@ import CreateUserPage from '../components/CreateUser/CreateUserPage.vue'
 import NewGroupPage from '../components/NewGroup/NewGroupPage.vue'
 import AddMemberPage from '../components/AddMember/AddMemberPage.vue'
 import GroupChatPage from '../components/GroupChat/GroupChatPage.vue'
+import SymmetricDemo from "../components/SymmetricDemo.vue";
+import AsymmetricDemo from "../components/AsymmetricDemo.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -39,6 +41,16 @@ const router = createRouter({
             name: 'group-chat',
             component: GroupChatPage,
             props: true
+        },
+        {
+            path: '/symmetric-demo',
+            name: 'symmetric-demo',
+            component: SymmetricDemo
+        },
+        {
+            path: '/asymmetric-demo',
+            name: 'asymmetric-demo',
+            component: AsymmetricDemo
         },
         {
             path: '/:pathMatch(.*)*',

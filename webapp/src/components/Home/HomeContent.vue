@@ -26,7 +26,10 @@ export default {
     setup() {
         // data
 
-        //const groups = ref([]);
+        // const groups = ref([]);
+        // const username = ref(localStorage.getItem('username'));
+
+
         const groups = ref([
             {
                 "groupId": "101",

@@ -12,7 +12,7 @@
                     <input id="uname" type="text" v-model="username" placeholder="Username" required>
                 </div>
                 <div id="div-pwd">
-                    <input id="pwd" type="text" v-model="password" placeholder="Password" required>
+                    <input id="pwd" type="password" v-model="password" placeholder="Password" required>
                 </div>
                 <div id="div-forgot">
                     <a href="#">Forgot passsword</a>
@@ -32,8 +32,11 @@ export default{
         name: 'LoginUser',
         setup(){
             // data
-            const username = ref('root');
-            const password = ref('supersecretpasswordhash');
+            // const username = ref('root');
+            // const password = ref('supersecretpasswordhash');
+            const username = ref('');
+            const password = ref('');
+
             // methods
             const login = () => {
                 fetch(import.meta.env.VITE_API_URL + "/login", {
