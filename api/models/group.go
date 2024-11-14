@@ -649,3 +649,62 @@ func GetGroups(userID int) ([]Group, error) {
 
 	return groups, nil
 }
+
+/*
+*  Returns a list of users in the group.
+*
+*  Args:
+*      - userID (int): The ID of the user.
+*      - groupID (int): The ID of the group.
+*
+*  Returns:
+*      - []Group: The list of groups the user is in.
+*      - error: The error if any occured.
+ */
+func GetGroupUsers(userID int, groupID int) ([]string, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	// Check is user
+	query, err := instance.Connection.Prepare("SELECT UserID FROM UserGroup WHERE UserID = ? AND GroupID = ?")
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	var matchUserID int
+	err = query.QueryRow(userID, groupID).Scan(&matchUserID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find group assossiated with user. %w", err)
+	}
+
+	query, err = instance.Connection.Prepare(`
+		SELECT Users.Username
+		FROM Users
+		JOIN UserGroup
+		ON Users.UserID = UserGroup.UserID
+		WHERE UserGroup.GroupID = ?
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	rows, err := query.Query(groupID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find groups. %w", err)
+	}
+
+	users := make([]string, 0)
+	for rows.Next() {
+		var m string
+		if err := rows.Scan(&m); err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find user. %w", err)
+		}
+		users = append(users, m)
+	}
+
+	return users, nil
+}
