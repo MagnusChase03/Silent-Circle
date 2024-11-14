@@ -12,13 +12,13 @@
             <div class="right-side">
               <div class="chat-bubble">
                 <div class="group-name-box">
-                  <input type="text" v-model="groupName" placeholder="Enter username" class="group-name-input"
-                    @keyup.enter="createGroup" />
+                  <input type="text" v-model="userName" placeholder="Enter username" class="user-name-input"
+                    @keyup.enter="invite" />
                 </div>
                 <br/>
                 <!-- Create group button -->
-                <button class="create-group-button" @click="createGroup" :disabled="!groupName.trim()">
-                  Invite user
+                <button class="invite-button" @click="invite" :disabled="!username.trim()">
+                  Invite user updated
                 </button>
                 <!-- Link to go back to homepage -->
                 <router-link to="/home" class="back-home-link">Go back to homepage</router-link>
@@ -42,12 +42,12 @@
     },
     data() {
       return {
-        groupName: ''
+        username: ''
       };
     },
     methods: {
-      createGroup() {
-        if (!this.groupName.trim()) {
+      invite() {
+        if (!this.username.trim()) {
           alert('Please enter a username.');
           return;
         }
@@ -115,7 +115,7 @@
       margin-left: 130px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    .group-name-input {
+    .user-name-input {
       background-color: transparent;
       border: none;
       outline: none;
@@ -124,10 +124,10 @@
       color: #333;
       border-radius: 25px;
     }
-    .group-name-input::placeholder {
+    .user-name-input::placeholder {
       color: #666;
     }
-    .create-group-button {
+    .invite-button {
     display: flex;
     align-items: center;
     justify-content: center;
