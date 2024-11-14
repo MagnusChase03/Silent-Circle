@@ -33,6 +33,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Listen for group invites](#groupinvitelisten)
 - [Listen for group chat](#groupchat)
 - [Get Messages](#groupmessages)
+- [Get Users](#groupusers)
 - [Remove User](#groupban)
 
 **Misc.**
@@ -788,6 +789,43 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 200,
     "Data": "Ok"
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /group/users
+
+*Route to get a list users in a group.*
+
+**Method**: `POST`
+
+**Body**: `group` (groupID)
+
+**Example**: `https://api.application.com/group/users`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode":200,
+    "Data": {
+        "Users": [
+          "root"
+        ]
+    }
 }
 ```
 
