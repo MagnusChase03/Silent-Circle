@@ -181,7 +181,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 700px;
+  max-width: 705px;
   padding: 10px;
   background-color: #f3f3f3;
   border-top: 1px solid #ddd;
