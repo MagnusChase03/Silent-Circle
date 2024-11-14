@@ -18,7 +18,7 @@
                 <br/>
                 <!-- Create group button -->
                 <button class="invite-button" @click="invite" :disabled="!username.trim()">
-                  Invite user updated
+                  Invite user
                 </button>
                 <!-- Link to go back to homepage -->
                 <router-link to="/home" class="back-home-link">Go back to homepage</router-link>
