@@ -20,6 +20,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Reject friend request](#userfriendreject)
 - [Remove friend](#userfriendremove)
 - [Get friend](#userfriendget)
+- [Get groups](#usergroups)
 - [Listen for friend request](#userfriendlisten)
 
 **Group**
@@ -417,6 +418,47 @@ $ sudo podman stop cs4389-api
     "StatusCode":200,
     "Data": {
         "Friends": ["foo"]
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
+}
+```
+
+```JSON
+{
+    "StatusCode": 401,
+    "Data": "Unauthorized"
+}
+```
+
+### /user/groups
+
+*Route to get a list groups a user is in.*
+
+**Method**: `GET`
+
+**Body**: `N/A`
+
+**Example**: `https://api.application.com/user/groups`
+
+**Returns**: `200`, `400`, `401`
+
+```JSON
+{
+    "StatusCode":200,
+    "Data": {
+        "Groups": [
+          {
+            "GroupID": 1,
+            "CreatorID": 2,
+            "GroupName": "Foo"
+          }
+        ]
     }
 }
 ```
