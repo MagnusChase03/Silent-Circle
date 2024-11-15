@@ -6,6 +6,7 @@ import CreateUserPage from '../components/CreateUser/CreateUserPage.vue'
 import NewGroupPage from '../components/NewGroup/NewGroupPage.vue'
 import AddMemberPage from '../components/AddMember/AddMemberPage.vue'
 import GroupChatPage from '../components/GroupChat/GroupChatPage.vue'
+import DeleteUserPage from '../components/DeleteUserPage/DeleteUserPage.vue'
 import SymmetricDemo from "../components/SymmetricDemo.vue";
 import AsymmetricDemo from "../components/AsymmetricDemo.vue";
 
@@ -43,9 +44,14 @@ const router = createRouter({
             props: true
         },
         {
+            path: '/delete-user',
+            name: '/delete-user',
+            component: DeleteUserPage,
+        }, {
             path: '/symmetric-demo',
             name: 'symmetric-demo',
             component: SymmetricDemo
+
         },
         {
             path: '/asymmetric-demo',

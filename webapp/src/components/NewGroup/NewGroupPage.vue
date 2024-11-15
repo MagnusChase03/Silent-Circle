@@ -44,7 +44,7 @@ export default {
     };
   },
   methods: {
-  
+    
     createGroup() {
       if (!this.groupName.trim()) {
         alert('Please enter a group name');
