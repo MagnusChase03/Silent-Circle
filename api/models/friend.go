@@ -7,6 +7,7 @@ package models
 
 import (
 	"fmt"
+
 	"github.com/MagnusChase03/CS4389-Project/db"
 )
 
@@ -260,4 +261,49 @@ func GetFriendUser(userID int) ([]string, error) {
 	}
 
 	return friends, nil
+}
+
+/*
+*  Returns a list of friend requests for the user.
+*
+*  Args:
+*      - userID (int): The ID of the user.
+*
+*  Returns:
+*      - []string: The list of users who sent a friend request.
+*      - error: The error if any occured.
+ */
+func GetFriendInvites(userID int) ([]string, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	query, err := instance.Connection.Prepare(`
+		SELECT Users.Username
+		FROM Users
+		JOIN FriendInvites
+		ON Users.UserID = FriendInvites.UserID
+		WHERE FriendInvites.User2ID = ?
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	rows, err := query.Query(userID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find group invites. %w", err)
+	}
+
+	users := make([]string, 0)
+	for rows.Next() {
+		var m string
+		if err := rows.Scan(&m); err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find user. %w", err)
+		}
+		users = append(users, m)
+	}
+
+	return users, nil
 }
