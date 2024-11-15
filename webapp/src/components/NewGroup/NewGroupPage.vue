@@ -32,8 +32,8 @@
 
 <script>
 import { ref } from 'vue';
-import NavBar from '../NavBar.vue';
 import { useRouter } from 'vue-router';
+import NavBar from '../NavBar.vue';
 import useSymmetricKey from '../../composables/useSymmetricKey';
 
 export default {
@@ -44,7 +44,7 @@ export default {
   setup() {
 
     const groupName = ref('');
-    const symmetricKey = ref(''); //symmetric key
+    const generatedSymmetricKey = ref(''); //symmetric key
     const router = useRouter();
     const createGroup = () => {
       if (!groupName.value.trim()) {
@@ -71,16 +71,22 @@ export default {
             console.log(data);
 
             const groupid = data.Data.GroupID;  // Extracting the GroupID
-            console.log("Group ID:", groupid);  // Log the GroupID to the console
+            //console.log("Group ID:", groupid);  // Log the GroupID to the console
 
-            const username = localStorage.getItem('username');   // Retrieve username from localStorage
-            console.log("Username from localStorage:", username);
+            const username = localStorage.getItem('username');  
+            //console.log("Username from localStorage:", username);
+            
             //generating symmetric key
-            symmetricKey.value = await useSymmetricKey();
-            console.log("Symmetric key generated:", symmetricKey.value);
-            alert("Group created successfully!");
+            generatedSymmetricKey.value = await useSymmetricKey();
 
-            router.push('/add-member');
+            console.log("Symmetric key generated:", generatedSymmetricKey.value);
+            const groupSymmetricKey = `${username}-${groupid}`;
+
+            // Save the symmetric key in localStorage with the key name "username-groupid"
+            localStorage.setItem(groupSymmetricKey, generatedSymmetricKey.value);
+
+            alert("Group created successfully!");
+            router.push({ path: '/add-member', query: { groupid } });
           }
         })
         .catch((error) => console.error("Unable to fetch data:", error));
