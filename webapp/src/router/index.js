@@ -44,12 +44,14 @@ const router = createRouter({
             props: true
         },
         {
-            path:'/delete-user',
-            name:'/delete-user',
+            path: '/delete-user',
+            name: '/delete-user',
             component: DeleteUserPage,
+        }, {
             path: '/symmetric-demo',
             name: 'symmetric-demo',
             component: SymmetricDemo
+
         },
         {
             path: '/asymmetric-demo',
