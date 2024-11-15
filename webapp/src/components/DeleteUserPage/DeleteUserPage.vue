@@ -4,7 +4,6 @@
 <div class="page-background">
   <!-- Header -->
   <header class="header">
-
     <!-- Title and search -->
     <h1 class="group-title">CS 4389 Group</h1>
     <div class="search-container">
@@ -84,19 +83,23 @@
 </div>
 </template>
 
-<script>
+<script >
 import icon from '@/assets/img/user-blue-ico.png';
 import NavBar from "../NavBar.vue";
-//import router from '@/router';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
-name: 'Group',
-components: {
-NavBar
-},
-data() {
-  return {
-    members: [
+  name: 'Group',
+  components: {
+    NavBar
+  },
+  setup() {
+    const router = useRouter();
+    const selectedMember = ref(null); // Store selected member
+
+    // Initialize data
+    const members = ref([
       { id: 1, name: 'User 1', avatar: icon },
       { id: 2, name: 'User 2', avatar: icon },
       { id: 3, name: 'User 3', avatar: icon },
@@ -105,103 +108,108 @@ data() {
       { id: 6, name: 'User 6', avatar: icon },
       { id: 7, name: 'User 7', avatar: icon },
       { id: 8, name: 'User 8', avatar: icon },
-    ],
-    searchQuery: '',
-    displayLimit: 3,
-    selectedMember: null,
-    searchTimeout: null,
-  };
-},
+    ]);
 
-computed: {
-  filteredMembers() {
-    if (!this.searchQuery) {
-      return this.members;
-    }
-    
-    const query = this.searchQuery.toLowerCase().trim();
-    return this.members.filter(member => 
-      member.name.toLowerCase().includes(query)
-    );
-  },
-  
-  displayedMembers() {
-    return this.filteredMembers.slice(0, this.displayLimit);
-  },
+    const searchQuery = ref('');
+    const displayLimit = ref(3);
+    const searchTimeout = ref(null);
 
-  hasMoreMembers() {
-    return this.filteredMembers.length > this.displayLimit;
-  }
-},
+    const filteredMembers = computed(() => {
+      if (!searchQuery.value) {
+        return members.value;
+      }
+      const query = searchQuery.value.toLowerCase().trim();
+      return members.value.filter(member =>
+        member.name.toLowerCase().includes(query)
+      );
+    });
 
-methods: {
-  handleSearch(event) {
-    // remoces previous timeout setting
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
+    const displayedMembers = computed(() => {
+      return filteredMembers.value.slice(0, displayLimit.value);
+    });
 
-    // new timeout
-    this.searchTimeout = setTimeout(() => {
-      this.searchQuery = event.target.value;
-      // resets display limit after update
-      this.displayLimit = 3;
-    }, 300);
-  },
+    const hasMoreMembers = computed(() => {
+      return filteredMembers.value.length > displayLimit.value;
+    });
 
-  showMore() {
-    this.displayLimit += 3;
-  },
+    const handleSearch = (event) => {
+      if (searchTimeout.value) {
+        clearTimeout(searchTimeout.value);
+      }
+      searchTimeout.value = setTimeout(() => {
+        searchQuery.value = event.target.value;
+        displayLimit.value = 3;
+      }, 300);
+    };
 
-  deleteMember(member) {
-    this.selectedMember = member;
-  },
+    const showMore = () => {
+      displayLimit.value += 3;
+    };
 
-  deleteSelectedUser() {
-    if (this.selectedMember) {
-      fetch(import.meta.env.VITE_API_URL + "/deleteUser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      })
-      .then((response) => {
+    const deleteMember = (member) => {
+      selectedMember.value = member;
+    };
+
+    const deleteSelectedUser = async () => {
+      if (!selectedMember.value) {
+        alert('Please select a member to delete');
+        return;
+      };
+
+// will adjust fetch method accordingly after other pages are done
+      try {
+        const response = await fetch(import.meta.env.VITE_API_URL + "/group/ban", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: JSON.stringify({
+            group: "groupId", 
+            username: selectedMember.value.name
+          }),
+          credentials: "include"
+        });
+
         if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-      })
-      .then((data) => {
-        if (data.StatusCode === 200) {
-          const index = this.members.findIndex((m) => m.id === this.selectedMember.id);
-          if (index !== -1) {
-            this.members.splice(index, 1);
-            this.selectedMember = null;
-            if (this.filteredMembers.length === 0) {
-              this.searchQuery = '';
-            }
+          const data = await response.json();
+          if (data.StatusCode === 200) {
+            members.value = members.value.filter(member => member.id !== selectedMember.value.id);
+            selectedMember.value = null;
+            alert("User deleted successfully");
+            router.push('/home');
+          } else {
+            alert(data.Data || "Failed to delete user");
+            router.push('/home');
           }
-          alert("User deleted successfully");
-        } else if (data.StatusCode === 400) {
-          alert("Bad Request: Could not delete user");
-        } else if (data.StatusCode === 401) {
-          alert("Unauthorized: Access denied");
+        } else {
+          alert(`Error: ${response.status}`);
+          router.push('/home');
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Unable to delete user:", error);
         alert("Error occurred while trying to delete user.");
-      });
-    } 
+      }
+    };
+
+    return {
+      members,
+      searchQuery,
+      displayLimit,
+      searchTimeout,
+      selectedMember,
+      filteredMembers,
+      displayedMembers,
+      hasMoreMembers,
+      handleSearch,
+      showMore,
+      deleteMember,
+      deleteSelectedUser,
+    };
   }
-}
-}
+};
 </script>
 
 <style scoped>
-
 .page-background {
 font-family: cursive;
 max-width: auto;
