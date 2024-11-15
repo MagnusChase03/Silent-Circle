@@ -36,6 +36,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Get Users](#groupusers)
 - [Remove User](#groupban)
 - [Chat](#groupchat)
+- [Get Invites](#groupinviteget)
 
 **Misc.**
 
@@ -841,5 +842,37 @@ $ sudo podman stop cs4389-api
 {
     "StatusCode": 401,
     "Data": "Unauthorized"
+}
+```
+
+### /group/invite/get
+
+*Route to get a users group invites.*
+
+**Method**: `POST`
+
+**Body**: N/A
+
+**Example**: `https://api.application.com/group/invite/get`
+
+**Returns**: `200`, `400`
+
+```JSON
+{
+    "StatusCode": 200,
+    "Data": {
+        "Groups": [
+          "GroupID": 6,
+          "CreatorID": 2,
+          "GroupName": "FooBar"
+        ]
+    }
+}
+```
+
+```JSON
+{
+    "StatusCode": 400,
+    "Data": "Bad Request"
 }
 ```
