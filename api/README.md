@@ -35,6 +35,7 @@ functionallity of an end-to-end encrypted group messenger.*
 - [Get Messages](#groupmessages)
 - [Get Users](#groupusers)
 - [Remove User](#groupban)
+- [Chat](#groupchat)
 
 **Misc.**
 
