@@ -1,7 +1,7 @@
 <template>
     <div id="home-right">
         <div id="lst-groups">
-            <ul>
+            <ul v-if="groups.length > 0">
                 <li v-for="group in groups" :key="group.groupId" class="home-group">
                     <router-link :to="{name: 'group-chat', params: {gid: group.groupId, gname: group.groupName }}">
                         <div class="contact-group">
@@ -11,17 +11,25 @@
                     </router-link>
                 </li>
             </ul>
+            <div v-else class="no-group">
+                <p>No groups available. Please create a new group.</p>
+            </div>
         </div>  
     </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 export default {
     name: 'HomeContent',
     setup() {
-        //const groups = ref([]);
+        // data
+
+        // const groups = ref([]);
+        // const username = ref(localStorage.getItem('username'));
+
+
         const groups = ref([
             {
                 "groupId": "101",
@@ -95,5 +103,20 @@ export default {
 
     .home-group button:hover{
         cursor: pointer;
+    }
+
+    div.no-group {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: space-around;
+        align-items: center;
+    }
+
+    div.no-group p {
+        font-size: 1.8em;
+        color: #CCC;
     }
 </style>

@@ -12,7 +12,7 @@
                     <input id="uname" type="text" v-model="username" placeholder="Username" required>
                 </div>
                 <div id="div-pwd">
-                    <input id="pwd" type="text" v-model="password" placeholder="Password" required>
+                    <input id="pwd" type="password" v-model="password" placeholder="Password" required>
                 </div>
                 <div id="div-forgot">
                     <a href="#">Forgot passsword</a>
@@ -31,11 +31,12 @@ import { ref } from 'vue';
 export default{
         name: 'LoginUser',
         setup(){
-            // alert('LoginUser component loaded');
-            console.log('LoginUser component loaded');
             // data
-            const username = ref('root');
-            const password = ref('supersecretpasswordhash');
+            // const username = ref('root');
+            // const password = ref('supersecretpasswordhash');
+            const username = ref('');
+            const password = ref('');
+
             // methods
             const login = () => {
                 fetch(import.meta.env.VITE_API_URL + "/login", {
@@ -47,16 +48,22 @@ export default{
                     body: `username=${uname.value}&password=${pwd.value}`,
                     credentials: "include"
                 }).then((res) => {
+                    // Check if the response is a 401
+                    if(res.status == 401){
+                        alert("Invalid username or password");
+                        throw new Error(`Http error! Status: ${res.ok}`);
+                    }
+
                     if(!res.ok){
                         // If the response is not ok, throw an error
                         throw new Error(`Http error! Status: ${res.status}`);
                     }
+
                     // Return the response as JSON
                     return res.json();
 
                 }).then((data) => {
                     if(data.StatusCode==200){
-                        console.log(data)
                         // Save the username in the local storage
                         localStorage.setItem('username', username.value);
                         // Redirect to the home page
@@ -64,7 +71,8 @@ export default{
                         router.push('/home');
                     }
                     // If the response is not ok, throw an error
-                }).catch((error) => console.error("Unable to tetch data:",error));
+                }).catch((error) => console.error("Unable to tetch data:",error)
+                ).catch((error) => console.error("Unable to tetch data:",error));
             }
             // computed
             return { username, password, login }

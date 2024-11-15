@@ -7,6 +7,8 @@ import NewGroupPage from '../components/NewGroup/NewGroupPage.vue'
 import AddMemberPage from '../components/AddMember/AddMemberPage.vue'
 import GroupChatPage from '../components/GroupChat/GroupChatPage.vue'
 import DeleteUserPage from '../components/DeleteUserPage/DeleteUserPage.vue'
+import SymmetricDemo from "../components/SymmetricDemo.vue";
+import AsymmetricDemo from "../components/AsymmetricDemo.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -45,6 +47,18 @@ const router = createRouter({
             path:'/delete-user',
             name:'/delete-user',
             component: DeleteUserPage,
+            path: '/symmetric-demo',
+            name: 'symmetric-demo',
+            component: SymmetricDemo
+        },
+        {
+            path: '/asymmetric-demo',
+            name: 'asymmetric-demo',
+            component: AsymmetricDemo
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: '/'
         }
     ]
 })
