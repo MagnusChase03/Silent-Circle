@@ -708,3 +708,48 @@ func GetGroupUsers(userID int, groupID int) ([]string, error) {
 
 	return users, nil
 }
+
+/*
+*  Returns a list of group invites for user.
+*
+*  Args:
+*      - userID (int): The ID of the user.
+*
+*  Returns:
+*      - []Group: The list of groups the user is in.
+*      - error: The error if any occured.
+ */
+func GetGroupInvites(userID int) ([]Group, error) {
+	instance, err := db.GetMariaDB()
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get mariadb instance. %w", err)
+	}
+
+	query, err := instance.Connection.Prepare(`
+		SELECT Groups.GroupID, Groups.CreatorID, Groups.GroupName
+		FROM Groups
+		JOIN GroupInvites
+		ON Groups.GroupID = GroupInvites.GroupID
+		WHERE GroupInvites.UserID = ?
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to get parse SQL query. %w", err)
+	}
+	defer query.Close()
+
+	rows, err := query.Query(userID)
+	if err != nil {
+		return nil, fmt.Errorf("[ERROR] Failed to find group invites. %w", err)
+	}
+
+	groups := make([]Group, 0)
+	for rows.Next() {
+		var m Group
+		if err := rows.Scan(&m.GroupID, &m.CreatorID, &m.GroupName); err != nil {
+			return nil, fmt.Errorf("[ERROR] Failed to find group. %w", err)
+		}
+		groups = append(groups, m)
+	}
+
+	return groups, nil
+}

@@ -130,6 +130,13 @@ func main() {
 		middleware.LogMiddleware,
 	))
 
+	mux.Handle("/user/friend/invite/get", middleware.HandleWithMiddleware(
+		http.HandlerFunc(friendRoutes.GetFriendInvitesHandler),
+		middleware.AuthMiddleware,
+		middleware.CorsMiddleware,
+		middleware.LogMiddleware,
+	))
+
 	mux.Handle("/group/users", middleware.HandleWithMiddleware(
 		http.HandlerFunc(groupRoutes.GetGroupUsersHandler),
 		middleware.AuthMiddleware,
@@ -202,6 +209,13 @@ func main() {
 
 	mux.Handle("/group/ban", middleware.HandleWithMiddleware(
 		http.HandlerFunc(groupRoutes.RemoveGroupUserHandler),
+		middleware.AuthMiddleware,
+		middleware.CorsMiddleware,
+		middleware.LogMiddleware,
+	))
+
+	mux.Handle("/group/invite/get", middleware.HandleWithMiddleware(
+		http.HandlerFunc(groupRoutes.GetGroupInvitesHandler),
 		middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 		middleware.LogMiddleware,
