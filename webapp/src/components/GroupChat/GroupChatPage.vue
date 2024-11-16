@@ -4,56 +4,46 @@
     <div class="page-background">
       <!-- Header with Menu Icon and Group Title -->
       <div class="header">
-        <h1 class="group-title">CS 4389 Group</h1>
+        <h1 class="group-title">{{ gname || "CS 4389 Group" }}</h1>
       </div>
 
       <!-- Chat Area -->
       <div class="chat-area">
-        <!-- Chat Bubble - Message 1 -->
-        <div class="chat-message left">
-          <img src="@/assets/img/user-blue.png" alt="Avatar" class="avatar" />
-          <div class="bubble">
-            <p class="username">comet_99</p>
-            <p class="message">My name is Temoc, I'm a senior!</p>
+        <!-- Dynamic Chat Messages -->
+        <div
+          v-for="(message, index) in messages"
+          :key="index"
+          :class="message.type === 'right' ? 'chat-message-right right' : 'chat-message left'"
+        >
+          <div v-if="message.type === 'left'" class="chat-message left">
+            <img src="@/assets/img/user-blue.png" alt="Avatar" class="avatar" />
+            <div class="bubble">
+              <p class="username">{{ message.username }}</p>
+              <p class="message">{{ message.content }}</p>
+            </div>
           </div>
-        </div>
-
-        <!-- Chat Bubble - Message 2 -->
-        <div class="chat-message left">
-          <img src="@/assets/img/user-blue.png" alt="Avatar" class="avatar" />
-          <div class="bubble">
-            <p class="username">crane_981</p>
-            <p class="message">Hi! I’m Enarc, I’m a junior this year!</p>
-          </div>
-        </div>
-
-        <!-- Chat Bubble - Message 3 -->
-        <div class="chat-message-right right">
-          <div class="bubble">
-            <p class="message">Let's briefly introduce ourselves!</p>
-          </div>
-        </div>
-
-        <!-- Chat Bubble - Message 4 -->
-        <div class="chat-message-right right">
-          <div class="bubble">
-            <p class="message">My name is Name! Also a senior!</p>
+          <div v-else class="chat-message-right right">
+            <div class="bubble">
+              <p class="message">{{ message.content }}</p>
+            </div>
           </div>
         </div>
 
         <!-- Typing Bar at the Bottom inside Chat Area -->
         <div class="typing-bar">
           <input
+            v-model="newMessage"
             type="text"
             placeholder="Type a message..."
             class="message-input"
           />
-          <button class="send-button">Send</button>
+          <button @click="sendMessage" class="send-button">Send</button>
         </div>
 
         <!-- Plus Sign Button at the Top Right -->
         <button class="plus-button">
-          <router-link to="/add-member">+</router-link></button>
+          <router-link to="/add-member">+</router-link>
+        </button>
 
         <!-- Minus Sign Button underneath Plus Button -->
         <button class="minus-button">
@@ -68,6 +58,10 @@
 <script>
 import NavBar from "../NavBar.vue";
 import SCLogo from "../SCLogo.vue";
+import { ref, onMounted, onUnmounted } from "vue";
+// Import the encryption and decryption functions
+import useDecryptSymMsg from "./useDecryptSymMsg";
+import useEncryptSymMsg from "./useEncryptSymMsg";
 
 export default {
   props: ["gid", "gname"],
@@ -76,8 +70,104 @@ export default {
     NavBar,
     SCLogo,
   },
+  setup(props) {
+    const messages = ref([]);
+    const newMessage = ref("");
+    let socket = null;
+    //const symmetricKeyBase64 = "your_symmetric_key_here"; // Add your symmetric key here
+    const groupSymmetricKeyTest = `${username}-${groupid}`;
+    const restoredKey = localStorage.getItem(groupSymmetricKeyTest);
+    console.log("Resotred Symmetric key:", restoredKey);
+
+    // Initialize WebSocket and set up event handlers
+    const initializeWebSocket = () => {
+      const groupId = props.gid || "defaultGroup"; // Use defaultGroup if no gid provided
+      const wsUrl = `ws://${import.meta.env.VITE_API_URL}/api/chat?group=${groupId}`;
+
+      socket = new WebSocket(wsUrl);
+
+      // Handle incoming messages
+      socket.onmessage = async (event) => {
+        const messageData = JSON.parse(event.data);
+        try {
+          // Decrypt the received message
+          const decryptedMessage = await useDecryptSymMsg(
+            symmetricKeyBase64,
+            messageData.message
+          );
+          
+          messages.value.push({
+            username: messageData.username,
+            content: decryptedMessage,
+            type: messageData.type, // Should be 'left' or 'right'
+          });
+        } catch (error) {
+          console.error("Decryption failed:", error);
+        }
+      };
+
+      // Handle connection errors
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+      // Handle connection closure
+      socket.onclose = () => {
+        console.log("WebSocket connection closed.");
+      };
+    };
+
+    // Send the encrypted message
+    const sendMessage = async () => {
+      if (!newMessage.value.trim()) return; // Avoid sending empty messages
+
+      try {
+        // Encrypt the message before sending
+        const encryptedMessage = await useEncryptSymMsg(
+          symmetricKeyBase64,
+          newMessage.value
+        );
+
+        // Send encrypted message to WebSocket
+        socket.send(JSON.stringify({
+          message: encryptedMessage,
+          group: props.gid
+        }));
+
+        // Push the message to the local array (for immediate display)
+        messages.value.push({
+          username: "You",
+          content: newMessage.value, // Display original message for local preview
+          type: "right",
+        });
+
+        // Clear the input field
+        newMessage.value = "";
+      } catch (error) {
+        console.error("Encryption failed:", error);
+      }
+    };
+
+    // Mount and unmount WebSocket connection
+    onMounted(() => {
+      initializeWebSocket();
+    });
+
+    onUnmounted(() => {
+      if (socket) {
+        socket.close();
+      }
+    });
+
+    return {
+      messages,
+      newMessage,
+      sendMessage,
+    };
+  },
 };
 </script>
+
 
 <style scoped>
 .page-background {
@@ -140,7 +230,8 @@ export default {
   display: flex;
   justify-content: flex-end; /* Aligns the message to the right */
   margin: 10px 0; /* Add margin to separate messages */
-  margin-left: 400px;
+  margin-left: 10px;
+  width: 90%;
 }
 
 .left .bubble {
@@ -156,6 +247,7 @@ export default {
   align-self: flex-end;
   border-radius: 15px 15px 0 15px;
   max-width: 80%; /* Limits the width of the bubble */
+  /*text-align: left;*/
 }
 
 .avatar {
