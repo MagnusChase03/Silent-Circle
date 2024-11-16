@@ -71,15 +71,10 @@ export default {
             console.log(data);
 
             const groupid = data.Data.GroupID;  // Extracting the GroupID
-            //console.log("Group ID:", groupid);  // Log the GroupID to the console
-
-            const username = localStorage.getItem('username');  
-            //console.log("Username from localStorage:", username);
-            
+            const username = localStorage.getItem('username');              
             //generating symmetric key
             generatedSymmetricKey.value = await useSymmetricKey();
-
-            console.log("Symmetric key generated:", generatedSymmetricKey.value);
+            console.log("Symmetric key generated");
             const groupSymmetricKey = `${username}-${groupid}`;
 
             // Save the symmetric key in localStorage with the key name "username-groupid"
