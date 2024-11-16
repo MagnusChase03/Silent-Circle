@@ -3,7 +3,7 @@
         <div id="login-logo">
             <div id="div-logo">
             </div>
-            <h1>Slient Circle</h1>
+            <h1>Silent Circle</h1>
         </div>
         <div id="login-main">
             <div id="div-login-form">
