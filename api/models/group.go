@@ -316,6 +316,13 @@ func SendGroupInvite(userID int, username string, encryptedKey string, groupID i
 		)
 	}
 
+	if userID != creatorID {
+		return fmt.Errorf(
+			"[ERROR] Could not find group. %w",
+			err,
+		)
+	}
+
 	// Get invitee ID
 	query, err = instance.Connection.Prepare(
 		"SELECT UserID FROM Users WHERE Username = ?",

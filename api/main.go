@@ -194,7 +194,7 @@ func main() {
 	))
 
 	mux.Handle("/group/chat", middleware.HandleWithMiddleware(
-		http.HandlerFunc(groupRoutes.GroupInviteListenerHandler),
+		http.HandlerFunc(groupRoutes.ChatHandler),
 		middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 		middleware.LogMiddleware,

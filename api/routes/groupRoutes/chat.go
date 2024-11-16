@@ -36,7 +36,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	groupID, err := strconv.ParseInt(groupIDStr, 10, 64)
-	if err == nil {
+	if err != nil {
 		utils.SendBadRequest(w)
 		return
 	}
