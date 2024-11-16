@@ -17,11 +17,11 @@
         </div>
         <div id="home-invite-user">
             <button>
-                <router-link to="/add-member">
-                    <img src="../assets/img/invite-user-ico.png" alt="Invite User">
+                <router-link to="/invite-users">
+                    <img src="../assets/img/invite-user-ico.png" alt="Invite Users">
                 </router-link>
             </button>
-            <h5>Invite User</h5>
+            <h5>Invite Users</h5>
         </div>
         <div id="home-btn">
             <button>
@@ -85,41 +85,8 @@
                 if (!username.value || username.value === 'null') {
                     router.push('/');
                 }
-
-                // // verify the public key from the server
-                // fetch(import.meta.env.VITE_API_URL + "/user/get", {
-                //     // Send the username and password to the server
-                //     method: "POST",
-                //     headers: {
-                //         "Content-Type": "application/x-www-form-urlencoded"
-                //     },
-                //     body: `username=${username.value}`,
-                //     credentials: "include"
-                // }).then((res) => {
-                //     // Check if the response is ok
-                //     if (!res.ok) {
-                //         // If the response is not ok, throw an error
-                //         throw new Error(`Http error! Status: ${res.status}`);
-                //     }
-
-                //     // Return the response as JSON
-                //     return res.json();
-
-                // }).then((data) => {
-                //     if (data.StatusCode == 200) {
-                //         // get the public key from the response data
-                //         publicKey.value = data.Data.PublicKey;
-
-                //         // Log the public key and private key to the console
-                //         console.log('Private Key Retrieved:', privateKey.value);
-                //         console.log("Public Key Retrieved:", publicKey.value);
-                //     }
-                //     // If the response is not ok, throw an error
-                // }).catch((error) => console.error("Unable to tetch data:", error)
-                // ).catch((error) => console.error("Unable to tetch data:", error));
-
-
             });
+            
             // computed
             return { username, logOut}
         }

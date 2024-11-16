@@ -9,6 +9,8 @@ import GroupChatPage from '../components/GroupChat/GroupChatPage.vue'
 import DeleteUserPage from '../components/DeleteUserPage/DeleteUserPage.vue'
 import SymmetricDemo from "../components/SymmetricDemo.vue";
 import AsymmetricDemo from "../components/AsymmetricDemo.vue";
+import InviteUsersPage from "../components/InviteUsers/InviteUsersPage.vue";
+import AcceptInvitePage from "../components/AcceptInvite/AcceptInvitePage.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -36,6 +38,14 @@ const router = createRouter({
         {
             path: '/add-member',
             component: AddMemberPage
+        },
+        {
+            path: '/invite-users',
+            component: InviteUsersPage
+        },
+        {
+            path: '/accept-invite',
+            component: AcceptInvitePage
         },
         {
             path: '/group-chat/:gid/:gname',
