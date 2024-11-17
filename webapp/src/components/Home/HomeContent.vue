@@ -30,7 +30,6 @@ export default {
 
         
         const load = async () => {
-            console.log("Loading groups for user: ", username.value);
             // get groups that an user belongs to
             fetch(import.meta.env.VITE_API_URL + "/user/groups", {
                 // Send the username and password to the server
@@ -50,7 +49,6 @@ export default {
                 return res.json();
 
             }).then((data) => {
-                alert("Groups loaded successfully", data);
                 if (data.StatusCode == 200) {
                     // get the public key from the response data
                     groups.value = data.Data.Groups;
@@ -61,49 +59,8 @@ export default {
             ).catch((error) => console.error("Unable to tetch data:", error));
 
         }
-        console.log("calling load");
+        
         load();
-        //     {
-        //         "groupId": "101",
-        //         "groupName": "CS4389"
-        //     },
-        //     {
-        //         "groupId": "102",
-        //         "groupName": "Work"
-        //     },
-        //     {
-        //         "groupId": "103",
-        //         "groupName": "Family"
-        //     },
-        //     {
-        //         "groupId": "104",
-        //         "groupName": "Sports"
-        //     },
-        //     {
-        //         "groupId": "105",
-        //         "groupName": "Book Club"
-        //     },
-        //     {
-        //         "groupId": "106",
-        //         "groupName": "CS4389"
-        //     },
-        //     {
-        //         "groupId": "107",
-        //         "groupName": "Work"
-        //     },
-        //     {
-        //         "groupId": "108",
-        //         "groupName": "Family"
-        //     },
-        //     {
-        //         "groupId": "109",
-        //         "groupName": "Sports"
-        //     },
-        //     {
-        //         "groupId": "1010",
-        //         "groupName": "Book Club"
-        //     }
-        // ]);
 
         return { groups }
     }
