@@ -5,6 +5,11 @@
                     Hello
                     <span class="h-user">{{ username }}</span>
             </div>
+            <router-link to="/accept-invite" class="btn-accept-invite">
+                <button class="btn-notify">
+                    <img src="../assets/img/notify-ico.png" alt="New Invite">
+                </button>
+            </router-link>
             <!-- <button><img src="../assets/img/arrow-left-ico.png" alt="Go back"></button> -->
         </div>
         <div id="home-new-group">
@@ -22,6 +27,14 @@
                 </router-link>
             </button>
             <h5>Invite Users</h5>
+        </div>
+        <div id="home-invite-user">
+            <button>
+                <router-link to="/accept-invite">
+                    <img src="../assets/img/invite-ico.png" alt="Accept Invitation">
+                </router-link>
+            </button>
+            <h5>Accept Invitates</h5>
         </div>
         <div id="home-btn">
             <button>
@@ -96,7 +109,7 @@
 <style scoped>
     div#home-menu-top .div-h-user{
         color:#FFF;
-        font-size: 1.6em;
+        font-size: 1.5em;
         text-align: left;
         height: auto;
         margin:5px
@@ -108,7 +121,7 @@
         font-weight: 900;
     }
 
-    div#home-menu-top .btn-log-out-user{
+    div#home-menu-top .btn-accept-invite{
         /* display: block; */
         color: rgb(6, 6, 88);
         text-decoration: underline;
@@ -116,7 +129,7 @@
         margin:5px
     }
 
-    div#home-menu-top .btn-log-out-user:hover{
+    div#home-menu-top .btn-accept-invite:hover{
         color:#FFF;
         cursor: pointer;
     }
@@ -124,5 +137,20 @@
     div#home-logout, div#home-new-group, div#home-invite-user, div#home-btn, div#home-logout button:hover{
         color:#FFF;
         cursor: pointer;
+    }
+
+    div#home-menu-top button img {
+        width: 24px;
+        height: 24px;
+    }
+
+    div#home-menu-top{
+        position:relative
+    }
+
+    div#home-menu-top button{
+        position: absolute;
+        top: 0px;
+        right: 0px;
     }
 </style>

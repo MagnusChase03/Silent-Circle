@@ -60,8 +60,8 @@ import NavBar from "../NavBar.vue";
 import SCLogo from "../SCLogo.vue";
 import { ref, onMounted, onUnmounted } from "vue";
 // Import the encryption and decryption functions
-import useDecryptSymMsg from "./useDecryptSymMsg";
-import useEncryptSymMsg from "./useEncryptSymMsg";
+import useDecryptSymMsg from "../../composables/useDecryptSymMsg.js";
+import useEncryptSymMsg from "../../composables/useEncryptSymMsg.js";
 
 export default {
   props: ["gid", "gname"],
@@ -73,19 +73,31 @@ export default {
   setup(props) {
     const messages = ref([]);
     const newMessage = ref("");
+    const username = localStorage.getItem("username");
     let socket = null;
     //const symmetricKeyBase64 = "your_symmetric_key_here"; // Add your symmetric key here
-    const groupSymmetricKeyTest = `${username}-${groupid}`;
+    const groupSymmetricKeyTest = `${username}-${props.gid}`;
     const restoredKey = localStorage.getItem(groupSymmetricKeyTest);
-    console.log("Resotred Symmetric key:", restoredKey);
+    // console.log("Resotred Symmetric key:", restoredKey);
+    console.log("Resotred Symmetric key:");
+    console.log(`${groupSymmetricKeyTest}: ${restoredKey}`);
 
     // Initialize WebSocket and set up event handlers
     const initializeWebSocket = () => {
       const groupId = props.gid || "defaultGroup"; // Use defaultGroup if no gid provided
-      const wsUrl = `ws://${import.meta.env.VITE_API_URL}/api/chat?group=${groupId}`;
+      var hostname = import.meta.env.VITE_API_URL;
+      hostname = hostname.substring(hostname.indexOf("//") + 2);
+      console.log('test wss url', hostname);
+
+      const wsUrl = `wss:${hostname}/group/chat?group=${props.gid}`;
 
       socket = new WebSocket(wsUrl);
 
+      // Handle connection open
+            socket.onopen = () => {
+        console.log("WebSocket connection established.");
+      };
+      
       // Handle incoming messages
       socket.onmessage = async (event) => {
         const messageData = JSON.parse(event.data);
