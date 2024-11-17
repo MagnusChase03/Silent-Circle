@@ -15,7 +15,7 @@
                     <div>
                         <img src="/src/assets/img/logo-welcome.png">
                     </div>
-                    <h1>Slient Circle</h1>
+                    <h1>Silent Circle</h1>
                 </div>
                 <div id="div-login">
                     <div id="div-login-wrap">
