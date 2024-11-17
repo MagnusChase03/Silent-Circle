@@ -125,4 +125,19 @@
         color:#FFF;
         cursor: pointer;
     }
+
+    div#home-menu-top button img {
+        width: 24px;
+        height: 24px;
+    }
+
+    div#home-menu-top{
+        position:relative
+    }
+
+    div#home-menu-top button{
+        position: absolute;
+        top: 0px;
+        right: 0px;
+    }
 </style>
