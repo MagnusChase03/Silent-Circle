@@ -77,7 +77,9 @@ export default {
     //const symmetricKeyBase64 = "your_symmetric_key_here"; // Add your symmetric key here
     const groupSymmetricKeyTest = `${username}-${groupid}`;
     const restoredKey = localStorage.getItem(groupSymmetricKeyTest);
-    console.log("Resotred Symmetric key:", restoredKey);
+    // console.log("Resotred Symmetric key:", restoredKey);
+    console.log("Restored Symmetric key:");
+    console.log(`${groupSymmetricKeyTest}: ${restoredKey}`);
 
     // Initialize WebSocket and set up event handlers
     const initializeWebSocket = () => {
@@ -92,7 +94,7 @@ export default {
         try {
           // Decrypt the received message
           const decryptedMessage = await useDecryptSymMsg(
-            symmetricKeyBase64,
+            restoredKey,
             messageData.message
           );
           
@@ -124,7 +126,7 @@ export default {
       try {
         // Encrypt the message before sending
         const encryptedMessage = await useEncryptSymMsg(
-          symmetricKeyBase64,
+          restoredKey,
           newMessage.value
         );
 
