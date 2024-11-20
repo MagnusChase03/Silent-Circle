@@ -30,6 +30,7 @@
     </div>
   </div>
 
+
 </template>
   
   <script>
@@ -53,7 +54,7 @@
 
       function validatePassword() {
         // commented out for easier testing
-        // const passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        const passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
         // if (!passwordPattern.test(password.value)) {
         //   statusBarMessage.value = "Password must be at least 8 characters long, contain at least one number, and one special character.";
         //   statusBarColor.value = "red";
@@ -101,11 +102,6 @@
           return res.json();
         }).then((data) => {
           if(data.StatusCode==200){
-            // log the data to the console
-            console.log(data)
-            console.log("Public Key Initialized:", publicKeyBase64.value);
-            console.log("Private Key Initialized:", privateKeyBase64.value);
-
             // Save the private key in the local storage
             localStorage.setItem('privateKey', privateKeyBase64.value);
 
@@ -212,9 +208,11 @@
   
   /* Styles for input icons */
   .icon-username, .icon-phone, .icon-email, .icon-password, .icon-profile-picture {
-    border: none;
+    /*border: none;*/
+    border: 1px solid #060658;
+    border-radius: 20px;
     padding: 10px 10px 10px 50px;
-    width: 100%;
+    width: 90%;
     font-size: 1rem;
     outline: none;
     background: none;
@@ -273,7 +271,7 @@
     background: linear-gradient(to right, var(--btn-primary-color), var(--btn-secondary-color), var(--btn-primary-color));
     cursor: pointer;
     transition: background 0.3s;
-    border: 2px solid var(--text-color);
+    border: 2px solid #060658;
   }
   
   button:hover {

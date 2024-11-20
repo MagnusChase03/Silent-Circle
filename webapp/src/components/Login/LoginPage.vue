@@ -15,7 +15,7 @@
                     <input id="pwd" type="password" v-model="password" placeholder="Password" required>
                 </div>
                 <div id="div-forgot">
-                    <a href="#">Forgot passsword</a>
+                    <a href="/create-user">Create Account</a>
                 </div>
                 <div id="div-login">
                     <button id="btn-login" @click.prevent="login">Login</button>
@@ -32,8 +32,6 @@ export default{
         name: 'LoginUser',
         setup(){
             // data
-            // const username = ref('root');
-            // const password = ref('supersecretpasswordhash');
             const username = ref('');
             const password = ref('');
 
@@ -67,7 +65,7 @@ export default{
                         // Save the username in the local storage
                         localStorage.setItem('username', username.value);
                         // Redirect to the home page
-                        alert("Login successful");
+                        // alert("Login successful");
                         router.push('/home');
                     }
                     // If the response is not ok, throw an error

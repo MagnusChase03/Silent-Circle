@@ -75,26 +75,21 @@ export default {
     const newMessage = ref("");
     const username = localStorage.getItem("username");
     let socket = null;
-    //const symmetricKeyBase64 = "your_symmetric_key_here"; // Add your symmetric key here
     const groupSymmetricKeyTest = `${username}-${props.gid}`;
     const restoredKey = localStorage.getItem(groupSymmetricKeyTest);
-    // console.log("Resotred Symmetric key:", restoredKey);
-    console.log("Resotred Symmetric key:");
-    console.log(`${groupSymmetricKeyTest}: ${restoredKey}`);
 
     // Initialize WebSocket and set up event handlers
     const initializeWebSocket = () => {
-      const groupId = props.gid || "defaultGroup"; // Use defaultGroup if no gid provided
+      // const groupId = props.gid || "defaultGroup"; // Use defaultGroup if no gid provided
       var hostname = import.meta.env.VITE_API_URL;
       hostname = hostname.substring(hostname.indexOf("//") + 2);
-      console.log('test wss url', hostname);
 
       const wsUrl = `wss:${hostname}/group/chat?group=${props.gid}`;
 
       socket = new WebSocket(wsUrl);
 
       // Handle connection open
-            socket.onopen = () => {
+      socket.onopen = () => {
         console.log("WebSocket connection established.");
       };
       
@@ -102,10 +97,24 @@ export default {
       socket.onmessage = async (event) => {
         const messageData = JSON.parse(event.data);
         try {
+          // Extract the sender's username from the received message
+          const msg_from_socket = messageData.Message;
+          const sender_uame = msg_from_socket.substring(0, msg_from_socket.indexOf("-"));
+
+          // check if sender is the receiving user
+          if(sender_uame === username){
+            return;
+          }
+
+          // Extract and decode the encrypted message from the received data
+          const enccyptedMessage = decodeURIComponent(msg_from_socket.substring(msg_from_socket.indexOf("-") + 1),msg_from_socket.length);
+          console.log("Received encrypted message:", enccyptedMessage);
+
           // Decrypt the received message
           const decryptedMessage = await useDecryptSymMsg(
-            symmetricKeyBase64,
-            messageData.message
+            restoredKey,
+            // messageData.message
+            enccyptedMessage
           );
           
           messages.value.push({
@@ -136,13 +145,13 @@ export default {
       try {
         // Encrypt the message before sending
         const encryptedMessage = await useEncryptSymMsg(
-          symmetricKeyBase64,
+          restoredKey,
           newMessage.value
         );
 
         // Send encrypted message to WebSocket
         socket.send(JSON.stringify({
-          message: encryptedMessage,
+          message: encodeURIComponent(encryptedMessage),
           group: props.gid
         }));
 

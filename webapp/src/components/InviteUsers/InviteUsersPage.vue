@@ -1,12 +1,14 @@
 <template>
     <div id="wrapper-home">
         <NavBar></NavBar>
-        <div id="home-right">
+        <div id="invite-users-wrapper">
             <!-- Insert you main content here -->
-            <div class="add-member">
-                <h1>Invite Users Page</h1><br/>
-                <label for="txt-username">Username:</label>
-                <input type="text" id="txt-username" name="txt-username" v-model="invitee_uname" required>
+            <div class="invite-users-header">
+                <h1>Invite Users</h1><br/>
+                <div id="find-user">
+                    <label for="txt-username">Username:</label>
+                    <input type="text" id="txt-username" name="txt-username" v-model="invitee_uname" required class="styled-input">
+                </div>
                 <!-- <button @click="addMember">Add Member</button> -->
             </div>
             <div id="lst-groups">
@@ -54,7 +56,7 @@
 
                 // get the public key of the invitee user
                 await getInviteePublicKey().catch((error) => {
-                    console.error("Unable to fetch public key:", error);
+                    console.error("Username does not exist.", error);
                     return;
                 });
 
@@ -79,13 +81,12 @@
                 })
                     .then((res) => {
                         if (!res.ok) {
-                            throw new Error(`Http error! Status: ${res.status}`);
+                            throw new Error(`Unable to send invitation. Try again later ${res.status}`);
                         }
                         return res.json();
                     })
                     .then(async (data) => {
                         if (data.StatusCode == 200) {
-                            console.log(data);
                             // Retrieve the Group Encrypted Symmetric Key
                             alert("Group invitation sent successfully.");
                         }
@@ -98,7 +99,6 @@
                 const invitor_uname = localStorage.getItem('username');
                 const groupSymmetricKey = localStorage.getItem(`${invitor_uname}-${groupid}`);
                 if (groupSymmetricKey) {
-                    console.log("Group symmetric key retrieved:", groupSymmetricKey); // Debug statement
                     return groupSymmetricKey;
                 } else {
                     console.error("Group symmetric key not found.");
@@ -124,13 +124,12 @@
 
                     if (data.StatusCode === 200) {
                         publicKey.value = data.Data.PublicKey;
-                        console.log("Public Key Retrieved:", publicKey.value); // Debug statement
                     } else {
                         throw new Error('Failed to fetch public key');
                     }
                 } catch (error) {
                     console.error("Unable to fetch public key:", error);
-                    alert("Unable to fetch public key. Please try again.");
+                    alert("Username does not exist.");
                 }
             }
 
@@ -157,7 +156,6 @@
                     if (data.StatusCode == 200) {
                         // get the public key from the response data
                         groups.value = data.Data.Groups;
-                        console.log(data);
                     }
                     // If the response is not ok, throw an error
                 }).catch((error) => console.error("Unable to tetch data:", error)
@@ -176,19 +174,78 @@
 </script>
 
 <style scoped>
-   #home-right {
+   #invite-users-wrapper {
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
     }
-    #home-right div#lst-groups {
-        height: 85%;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        width: 100%;
-        display: block;
-        padding: 0;
-        margin: 0;
+
+    .invite-users-header{
+        font-size: 1.6em;
     }
+
+    .invite-users-header h1{
+        margin-left: 20px;
+        font-family: "Cookie", cursive;
+        color: #516dc1;
+        font-size: 2em;
+    }
+
+    div#find-user{
+        margin-bottom: 20px;
+        margin-left: 20px;
+    }
+
+        #invite-users-wrapper div#lst-groups {
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            width: 100%;
+            display: block;
+            padding: 0;
+            margin: 0;
+        }
+    
+        #invite-users-wrapper ul {
+            display: block;
+            list-style: none;
+            height: 100%
+        }
+    
+        #invite-users-wrapper ul li {
+            display: block;
+            border-bottom: #e7e7e7 3px solid;
+            height: 25%;
+            min-height: 150px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+    
+        #invite-users-wrapper ul li:last-child {
+            border: none;
+        }
+    
+        #invite-users-wrapper .contact-group {
+            color: #5c6689;
+            font-size: 25px;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-left: 20px;
+        }
+    
+        #invite-users-wrapper button {
+            display: inline-block;
+            background: none;
+            border: none;
+        }
+    
+        #invite-users-wrapper button img {
+            width: 80%;
+        }
+
     
     .home-group{
         justify-content: space-between;
@@ -238,5 +295,20 @@
         color: black;
         border: 2px solid #4CAF50;
     }
+
+        .styled-input {
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease-in-out;
+        }
+    
+        .styled-input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
 
 </style>

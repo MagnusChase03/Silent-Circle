@@ -5,8 +5,8 @@
                     Hello
                     <span class="h-user">{{ username }}</span>
             </div>
-            <router-link to="/accept-invite" class="btn-accept-invite">
-                <button class="btn-notify">
+            <router-link to="/accept-invite" class="notify-invite">
+                <button class="btn-notify" v-show="isVisible">
                     <img src="../assets/img/notify-ico.png" alt="New Invite">
                 </button>
             </router-link>
@@ -52,16 +52,46 @@
 </template>
 
 <script>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, onUnmounted } from 'vue';
     import router from '@/router';
     export default {
         name: 'NavBar',
         setup(){
             // data
+            let socket = null;
+            const isVisible = ref(false);
             const privateKey = ref(localStorage.getItem('privateKey'));
             const publicKey = ref('');
-
             const username = ref(localStorage.getItem('username'));
+
+            const initializeWebSocket = () => {
+                var hostname = import.meta.env.VITE_API_URL;
+                hostname = hostname.substring(hostname.indexOf("//") + 2);
+
+                const wsUrl = `wss:${hostname}/group/invite/listen`;
+
+                socket = new WebSocket(wsUrl);
+
+                socket.onopen = () => {
+                    console.log("WebSocket connection established.");
+                };
+
+                socket.onmessage = async (event) => {
+                    const messageData = JSON.parse(event.data);
+                    isVisible.value = true;
+                }
+
+                // Handle connection errors
+                socket.onerror = (error) => {
+                    console.error("WebSocket error:", error);
+                };
+
+                // Handle connection closure
+                socket.onclose = () => {
+                    console.log("WebSocket connection closed.");
+                };
+            }
+
 
             // methods
             const logOut = () => {
@@ -98,10 +128,18 @@
                 if (!username.value || username.value === 'null') {
                     router.push('/');
                 }
+
+                initializeWebSocket();
+            });
+
+            onUnmounted(() => {
+                if (socket) {
+                    socket.close();
+                }
             });
             
             // computed
-            return { username, logOut}
+            return { username, logOut, isVisible}
         }
     }
 </script>
@@ -121,7 +159,7 @@
         font-weight: 900;
     }
 
-    div#home-menu-top .btn-accept-invite{
+    div#home-menu-top .notify-invite{
         /* display: block; */
         color: rgb(6, 6, 88);
         text-decoration: underline;
@@ -129,8 +167,7 @@
         margin:5px
     }
 
-    div#home-menu-top .btn-accept-invite:hover{
-        color:#FFF;
+    div#home-menu-top .notify-invite .btn-notify:hover{
         cursor: pointer;
     }
 
@@ -140,8 +177,8 @@
     }
 
     div#home-menu-top button img {
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
     }
 
     div#home-menu-top{
